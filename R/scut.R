@@ -1,8 +1,3 @@
-library(palmerpenguins)
-library(tidyverse)
-library(DMwR)
-library(mclust)
-
 .do.oversample <- function(data, method, cls.col, minor, n, m) {
     if (method == 'SMOTE'){
         perc.over <- (m / n) * 100
@@ -90,15 +85,3 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust") {
     #}
     return(ret)
 }
-
-df <- penguins %>%
-    select(-contains("is_minor"), -island, -sex, -year) %>%
-    drop_na() %>%
-    as.data.frame()
-
-scutted <- SCUT(species ~ ., df)
-
-SMOTE(species ~ ., df, perc.over=110) %>% group_by(species) %>% count()
-
-df %>% group_by(species) %>% count()
-scutted %>% group_by(species) %>% count()
