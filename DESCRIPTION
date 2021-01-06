@@ -1,13 +1,15 @@
 Package: scutr
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Balancing Multiclass Datasets for Classification Tasks
+Version: 0.1
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Keenan",
+           family = "Ganz",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "ganzk@rpi.edu",
+Description: Imbalanced training datasets impede many popular classifiers. To balance training data, 
+a combination of oversampling minority classes and undersampling majority classes is necessary. 
+This package implements the SCUT (SMOTE and Cluster-based Undersampling Technique) algorithm, which 
+uses model-based clustering and synthetic oversampling to balance multiclass training datasets.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
