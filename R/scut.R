@@ -1,18 +1,35 @@
-.do.oversample <- function(data, method, cls.col, minor, n, m) {
-    if (method == 'SMOTE'){
-        perc.over <- (m / n) * 100
-        # attach a column indicating the minor class
-        d_temp <- cbind(data, as.factor(data[[cls.col]] == minor))
-        colnames(d_temp)[ncol(d_temp)] <- "is_minor__"
-        # perform SMOTE, using the minority column as the formula
-        d_prime <- DMwR::SMOTE(is_minor__ ~ ., d_temp, perc.over=perc.over)
-        # filter to the minority class, drop minority column, resample to proper number
-        # of observations
-        d_prime <- d_prime[d_prime[[cls.col]] == minor, -ncol(d_prime)]
-        samp.ind <- sample(1:nrow(d_prime), m, replace=nrow(d_prime) < m)
-        return(d_prime[samp.ind, ])
+.do.oversample <- function(data, method, cls, cls.col, n, m, ...) {
+    if (is.function(method)){
+        return(method(data, cls, cls.col, m, ...))
     }
-    else {
+    else if (method == 'SMOTE'){
+        col.ind <- which(names(data) == cls.col)
+        # set the class to whether it is equal to the minority class
+        data[[cls.col]] <- as.factor(data[[cls.col]] == cls)
+        # smotefamily::SMOTE breaks for one-dim datasets. This adds a dummy column
+        # so SMOTE can execute. This does not affect how SMOTE performs
+        if (ncol(data) == 2) {data$dummy__col__ <- 0}
+        # perform SMOTE, using the minority column as the formula
+        smoteret <- smotefamily::SMOTE(data[-col.ind], data[, col.ind])
+        # rbind the original observations and sufficient samples of the synthetic ones
+        orig <- smoteret$orig_P
+        target.samp <- m - nrow(orig)
+        synt <- smoteret$syn_data[sample.int(nrow(smoteret$syn_data),
+                                             size=target.samp,
+                                             replace=target.samp > nrow(smoteret$syn_data)), ]
+        d_prime <- rbind(orig, synt)
+        colnames(d_prime)[ncol(d_prime)] <- cls.col
+        d_prime[[cls.col]] <- cls
+        # remove the dummy column if necessary
+        d_prime <- d_prime[, names(d_prime) != "dummy__col__"]
+        return(d_prime)
+    }
+    else if (method == "random"){
+        # simple upsampling of rows in the given class
+        cls.ind <- c(1:nrow(data))[data[[cls.col]] == cls]
+        samp.ind <- sample(cls.ind, m, replace=length(cls.ind) < m)
+        return(data[samp.ind, ])
+    } else {
         stop("Uncrecognized oversample method: ", method)
     }
 }
@@ -34,25 +51,18 @@
 .do.undersample <- function(data, method, cls, cls.col, m, k, ...){
     # subset to the data of interest
     col.ind <- which(names(data) == cls.col)
-    subset <- data[data[[cls.col]] == cls, -col.ind]
+    subset <- data[data[[cls.col]] == cls, ]
 
-    # use the clustering method to get a vector of cluster classification
+    # use the custom method to get a vector of cluster classification
     if (is.function(method)){
         # use a custom method
-        classif <- method(subset, list(...))
-        sample.ind <- .sample.clusters(classif, m)
+        sample.ind <- method(subset, cls, cls.col, m, list(...))
     }
     else if (method == "mclust"){
+        # drop the class column since it often results in one cluste
+        subset <- subset[, -col.ind]
         # get cluster classification
         classif <- mclust::Mclust(subset, verbose=F)$classification
-        sample.ind <- .sample.clusters(classif, m)
-
-    } else if (method == "kmeans"){
-        # only numeric columns are allowed
-        if (!all(sapply(subset[, -col.ind], is.numeric))){
-            stop("Only numeric data allowed in kmeans undersampling.")
-        }
-        classif <- kmeans(subset[, -col.ind], centers=k)$cluster
         sample.ind <- .sample.clusters(classif, m)
     } else if (method == "random"){
         # simply pull m rows from the subset
@@ -80,12 +90,13 @@
 #'
 #' @examples
 #' SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
-#' SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="kmeans")
+#' SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
 SCUT <- function(form, data, oversample="SMOTE", undersample="mclust", k=5) {
     cls.col <- as.character(form[[2]])
     if (!cls.col %in% names(data)){
         stop("Class column not found: ", cls.col)
     }
+    # target number of observations per class
     m <- round(nrow(data) / length(unique(data[[cls.col]])))
     # bulid skeleton of output
     ret <- as.data.frame(matrix(nrow=0, ncol=ncol(data)), col.names=names(data))
@@ -102,7 +113,7 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust", k=5) {
             d_prime <- scutr::.do.oversample(data=data,
                                       method=oversample,
                                       cls.col=cls.col,
-                                      minor=cls,
+                                      cls=cls,
                                       n=n, m=m)
 
             ret <- rbind(ret, d_prime)
