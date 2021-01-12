@@ -4,7 +4,7 @@
 \alias{SCUT}
 \title{SMOTE and cluster-based undersampling technique.}
 \usage{
-SCUT(form, data, oversample = "SMOTE", undersample = "mclust", k = 5)
+SCUT(form, data, oversample = "SMOTE", undersample = "mclust")
 }
 \arguments{
 \item{form}{formula}
@@ -23,5 +23,5 @@ This function balances multiclass training datasets.
 }
 \examples{
 SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
-SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="kmeans")
+SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
 }
