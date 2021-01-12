@@ -1,4 +1,4 @@
-.do.oversample <- function(data, method, cls, cls.col, n, m, ...) {
+.do.oversample <- function(data, method, cls.col, cls, m, ...) {
     if (is.function(method)){
         return(method(data, cls, cls.col, m, ...))
     }
@@ -7,7 +7,7 @@
         # set the class to whether it is equal to the minority class
         data[[cls.col]] <- as.factor(data[[cls.col]] == cls)
         # smotefamily::SMOTE breaks for one-dim datasets. This adds a dummy column
-        # so SMOTE can execute. This does not affect how SMOTE performs
+        # so SMOTE can execute. This does not affect how data is synthesized
         if (ncol(data) == 2) {data$dummy__col__ <- 0}
         # perform SMOTE, using the minority column as the formula
         smoteret <- smotefamily::SMOTE(data[-col.ind], data[, col.ind])
@@ -45,10 +45,10 @@
                                round(m / clust.count),
                                replace=T))
     }
-    return(sample.ind)
+    return(sample.ind[1:m]) # trim extras
 }
 
-.do.undersample <- function(data, method, cls, cls.col, m, k, ...){
+.do.undersample <- function(data, method, cls.col, cls, m, ...){
     # subset to the data of interest
     col.ind <- which(names(data) == cls.col)
     subset <- data[data[[cls.col]] == cls, ]
@@ -91,7 +91,7 @@
 #' @examples
 #' SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
 #' SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
-SCUT <- function(form, data, oversample="SMOTE", undersample="mclust", k=5) {
+SCUT <- function(form, data, oversample="SMOTE", undersample="mclust") {
     cls.col <- as.character(form[[2]])
     if (!cls.col %in% names(data)){
         stop("Class column not found: ", cls.col)
@@ -110,21 +110,21 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust", k=5) {
         n <- sum(data[[cls.col]] == cls)
         if (n < m){
             # do the oversampling
-            d_prime <- scutr::.do.oversample(data=data,
+            d_prime <- .do.oversample(data=data,
                                       method=oversample,
                                       cls.col=cls.col,
                                       cls=cls,
-                                      n=n, m=m)
+                                      m=m)
 
             ret <- rbind(ret, d_prime)
         }
         else if (n > m){
             # do the undersampling
-            d_prime <- scutr::.do.undersample(data=data,
+            d_prime <- .do.undersample(data=data,
                                        method=undersample,
-                                       cls=cls,
                                        cls.col=cls.col,
-                                       m=m, k=k)
+                                       cls=cls,
+                                       m=m)
 
             ret <- rbind(ret, d_prime)
         }
