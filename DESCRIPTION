@@ -14,6 +14,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: 
     mclust,
-    smotefamily
+    smotefamily,
+    R (>= 2.10)
 URL: https://github.com/s-kganz/scutr
 BugReports: https://github.com/s-kganz/scutr/issues
+Suggests: 
+    testthat (>= 2.0.0)
+Config/testthat/edition: 2
