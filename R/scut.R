@@ -1,4 +1,17 @@
-.do.oversample <- function(data, method, cls.col, cls, m, ...) {
+#' Oversampling driver function.
+#'
+#' @param data data.frame
+#' @param method character
+#' @param cls.col character
+#' @param cls character
+#' @param m integer
+#' @param ...
+#'
+#' @return data.frame
+#' @export
+#'
+#' @examples
+do.oversample <- function(data, method, cls.col, cls, m, ...) {
     if (is.function(method)){
         return(method(data, cls, cls.col, m, ...))
     }
@@ -7,9 +20,9 @@
         # set the class to whether it is equal to the minority class
         data[[cls.col]] <- as.factor(data[[cls.col]] == cls)
         # smotefamily::SMOTE breaks for one-dim datasets. This adds a dummy column
-        # so SMOTE can execute. This does not affect how data is synthesized
+        # so SMOTE can execute in that case. This does not affect how data is synthesized
         if (ncol(data) == 2) {data$dummy__col__ <- 0}
-        # perform SMOTE, using the minority column as the formula
+        # perform SMOTE
         smoteret <- smotefamily::SMOTE(data[-col.ind], data[, col.ind])
         # rbind the original observations and sufficient samples of the synthetic ones
         orig <- smoteret$orig_P
@@ -34,7 +47,16 @@
     }
 }
 
-.sample.clusters <- function(classif, m){
+#' Balanced sampled of m individuals from a vector of classification results.
+#'
+#' @param classif vector
+#' @param m integer
+#'
+#' @return vector
+#' @export
+#'
+#' @examples
+sample.clusters <- function(classif, m){
     # sample m balanced indices from the classes in the classif vector
     inds <- 1:length(classif)
     clust.count <- length(unique(classif))
@@ -48,7 +70,20 @@
     return(sample.ind[1:m]) # trim extras
 }
 
-.do.undersample <- function(data, method, cls.col, cls, m, ...){
+#' Undersampling driver function.
+#'
+#' @param data data.frame
+#' @param method character
+#' @param cls.col character
+#' @param cls character
+#' @param m integer
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+do.undersample <- function(data, method, cls.col, cls, m, ...){
     # subset to the data of interest
     col.ind <- which(names(data) == cls.col)
     subset <- data[data[[cls.col]] == cls, ]
@@ -63,7 +98,7 @@
         subset <- subset[, -col.ind]
         # get cluster classification
         classif <- mclust::Mclust(subset, verbose=F)$classification
-        sample.ind <- .sample.clusters(classif, m)
+        sample.ind <- sample.clusters(classif, m)
     } else if (method == "random"){
         # simply pull m rows from the subset
         sample.ind <- sample.int(nrow(subset), size=m, replace=m>nrow(subset))
@@ -109,8 +144,7 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust") {
     for (cls in unique(data[[cls.col]])) {
         n <- sum(data[[cls.col]] == cls)
         if (n < m){
-            # do the oversampling
-            d_prime <- .do.oversample(data=data,
+            d_prime <- do.oversample(data=data,
                                       method=oversample,
                                       cls.col=cls.col,
                                       cls=cls,
@@ -119,8 +153,7 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust") {
             ret <- rbind(ret, d_prime)
         }
         else if (n > m){
-            # do the undersampling
-            d_prime <- .do.undersample(data=data,
+            d_prime <- do.undersample(data=data,
                                        method=undersample,
                                        cls.col=cls.col,
                                        cls=cls,
@@ -141,4 +174,60 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust") {
     #}
     rownames(ret) <- 1:nrow(ret)
     return(ret)
+}
+
+#' Parallel implementation of SCUT.
+#'
+#' This function balances multiclass training datasets.
+#'
+#' @param form formula
+#' @param data data.frame
+#' @param oversample character
+#' @param undersample character
+#' @param ncores integer
+#'
+#' @return data.frame
+#' @export
+#'
+#' @examples
+#' SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
+#' SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
+SCUT.parallel <- function(form, data, ncores=detectCores(),
+                          oversample="SMOTE", undersample="mclust"){
+    cls.col <- as.character(form[[2]])
+    if (!cls.col %in% names(data)){
+        stop("Class column not found: ", cls.col)
+    }
+    # vector of classes in the data
+    classes <- unique(data[[cls.col]])
+    # target number of observations per class
+    m <- round(nrow(data) / length(classes))
+
+    # register cores
+    registerDoParallel(min(ncores, length(classes)))
+
+    d_prime <- foreach(cls=classes, .combine=rbind,
+                       .packages=c("scutr", "mclust", "smotefamily")) %dopar% {
+        n <- sum(data[[cls.col]] == cls)
+        if (n < m){
+            do.oversample(data=data,
+                          method=oversample,
+                          cls.col=cls.col,
+                          cls=cls,
+                          m=m)
+
+        } else if (n > m){
+            do.undersample(data=data,
+                           method=undersample,
+                           cls.col=cls.col,
+                           cls=cls,
+                           m=m)
+
+        } else {
+            # this class is already balanced
+            data[data[[cls.col]] == cls, ]
+        }
+    }
+    rownames(d_prime) <- 1:nrow(d_prime)
+    return(d_prime)
 }
