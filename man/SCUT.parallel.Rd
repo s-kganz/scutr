@@ -7,9 +7,10 @@
 SCUT.parallel(
   form,
   data,
-  ncores = detectCores(),
+  ncores = doParallel::detectCores() - 2,
   oversample = "SMOTE",
-  undersample = "mclust"
+  undersample = "mclust",
+  ...
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ SCUT.parallel(
 \item{oversample}{character}
 
 \item{undersample}{character}
+
+\item{...}{Options passed to custom over/undersampling function.}
 }
 \value{
 data.frame

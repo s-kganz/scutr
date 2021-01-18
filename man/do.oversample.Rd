@@ -17,11 +17,14 @@ do.oversample(data, method, cls.col, cls, m, ...)
 
 \item{m}{integer}
 
-\item{...}{}
+\item{...}{Other options passed to custom function.}
 }
 \value{
 data.frame
 }
 \description{
 Oversampling driver function.
+}
+\examples{
+do.oversample(iris, "SMOTE", "Species", "setosa", 70)
 }

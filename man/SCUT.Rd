@@ -4,7 +4,7 @@
 \alias{SCUT}
 \title{SMOTE and cluster-based undersampling technique.}
 \usage{
-SCUT(form, data, oversample = "SMOTE", undersample = "mclust")
+SCUT(form, data, oversample = "SMOTE", undersample = "mclust", ...)
 }
 \arguments{
 \item{form}{formula}
@@ -14,6 +14,8 @@ SCUT(form, data, oversample = "SMOTE", undersample = "mclust")
 \item{oversample}{character}
 
 \item{undersample}{character}
+
+\item{...}{Options passed to custom over/undersampling function.}
 }
 \value{
 data.frame
