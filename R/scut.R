@@ -5,12 +5,12 @@
 #' @param cls.col character
 #' @param cls character
 #' @param m integer
-#' @param ...
+#' @param ... Other options passed to custom function.
 #'
 #' @return data.frame
 #' @export
 #'
-#' @examples
+#' @examples do.oversample(iris, "SMOTE", "Species", "setosa", 70)
 do.oversample <- function(data, method, cls.col, cls, m, ...) {
     if (is.function(method)){
         return(method(data, cls, cls.col, m, ...))
@@ -47,28 +47,7 @@ do.oversample <- function(data, method, cls.col, cls, m, ...) {
     }
 }
 
-#' Balanced sampled of m individuals from a vector of classification results.
-#'
-#' @param classif vector
-#' @param m integer
-#'
-#' @return vector
-#' @export
-#'
-#' @examples
-sample.clusters <- function(classif, m){
-    # sample m balanced indices from the classes in the classif vector
-    inds <- 1:length(classif)
-    clust.count <- length(unique(classif))
-    sample.ind <- c()
-    for (cluster in unique(classif)){
-        sample.ind <- c(sample.ind,
-                        sample(inds[classif == cluster],
-                               round(m / clust.count),
-                               replace=T))
-    }
-    return(sample.ind[1:m]) # trim extras
-}
+
 
 #' Undersampling driver function.
 #'
@@ -77,28 +56,38 @@ sample.clusters <- function(classif, m){
 #' @param cls.col character
 #' @param cls character
 #' @param m integer
-#' @param ...
+#' @param ... Other options passed to custom function.
 #'
-#' @return
+#' @return data.frame
 #' @export
 #'
-#' @examples
+#' @importFrom mclust Mclust
+#' @importFrom mclust mclustBIC
+#'
+#' @examples do.undersample(iris, "mclust", "Species", "setosa", 30)
 do.undersample <- function(data, method, cls.col, cls, m, ...){
     # subset to the data of interest
     col.ind <- which(names(data) == cls.col)
     subset <- data[data[[cls.col]] == cls, ]
 
-    # use the custom method to get a vector of cluster classification
+    # use the custom method to get the undersampled data
     if (is.function(method)){
         # use a custom method
-        sample.ind <- method(subset, cls, cls.col, m, list(...))
+        return(method(subset, cls, cls.col, m, list(...)))
     }
     else if (method == "mclust"){
-        # drop the class column since it often results in one cluste
+        # drop the class column since it often results in one cluster
         subset <- subset[, -col.ind]
         # get cluster classification
         classif <- mclust::Mclust(subset, verbose=F)$classification
-        sample.ind <- sample.clusters(classif, m)
+        # sample equal number of obs per cluster
+        inds <- 1:length(classif)
+        samp.per.clust <- ceiling(m / length(unique(classif)))
+        sample.ind <- sapply(unique(classif),
+                             function(x) {
+                                 sample(inds[classif == x],
+                                        samp.per.clust,
+                                        replace=samp.per.clust > sum(classif == x))})[1:m]
     } else if (method == "random"){
         # simply pull m rows from the subset
         sample.ind <- sample.int(nrow(subset), size=m, replace=m>nrow(subset))
@@ -119,6 +108,7 @@ do.undersample <- function(data, method, cls.col, cls, m, ...){
 #' @param data data.frame
 #' @param oversample character
 #' @param undersample character
+#' @param ... Options passed to custom over/undersampling function.
 #'
 #' @return data.frame
 #' @export
@@ -126,7 +116,7 @@ do.undersample <- function(data, method, cls.col, cls, m, ...){
 #' @examples
 #' SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
 #' SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
-SCUT <- function(form, data, oversample="SMOTE", undersample="mclust") {
+SCUT <- function(form, data, oversample="SMOTE", undersample="mclust", ...) {
     cls.col <- as.character(form[[2]])
     if (!cls.col %in% names(data)){
         stop("Class column not found: ", cls.col)
@@ -185,6 +175,7 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust") {
 #' @param oversample character
 #' @param undersample character
 #' @param ncores integer
+#' @param ... Options passed to custom over/undersampling function.
 #'
 #' @return data.frame
 #' @export
@@ -192,8 +183,8 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust") {
 #' @examples
 #' SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
 #' SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
-SCUT.parallel <- function(form, data, ncores=detectCores(),
-                          oversample="SMOTE", undersample="mclust"){
+SCUT.parallel <- function(form, data, ncores=doParallel::detectCores()-2,
+                          oversample="SMOTE", undersample="mclust", ...){
     cls.col <- as.character(form[[2]])
     if (!cls.col %in% names(data)){
         stop("Class column not found: ", cls.col)
@@ -204,10 +195,15 @@ SCUT.parallel <- function(form, data, ncores=detectCores(),
     m <- round(nrow(data) / length(classes))
 
     # register cores
-    registerDoParallel(min(ncores, length(classes)))
+    doParallel::registerDoParallel(min(ncores, length(classes)))
 
-    d_prime <- foreach(cls=classes, .combine=rbind,
-                       .packages=c("scutr", "mclust", "smotefamily")) %dopar% {
+    # define local operators to make R CMD check happy
+    `%dopar%` <- foreach::`%dopar%`
+    cls <- NA
+
+    d_prime <- foreach::foreach(cls=classes, .combine=rbind,
+                                .export = c("do.undersample", "do.oversample"),
+                                .packages = c("scutr")) %dopar% {
         n <- sum(data[[cls.col]] == cls)
         if (n < m){
             do.oversample(data=data,
@@ -229,5 +225,6 @@ SCUT.parallel <- function(form, data, ncores=detectCores(),
         }
     }
     rownames(d_prime) <- 1:nrow(d_prime)
+    doParallel::stopImplicitCluster()
     return(d_prime)
 }
