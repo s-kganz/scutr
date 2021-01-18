@@ -1,4 +1,0 @@
-Implement SCUT - collection of over/undersampling techniques that run in parallel
-
-oversampling: random duplication, SMOTE, ADASYN
-undersampling: mclust, kmeans, random, Tomek links
