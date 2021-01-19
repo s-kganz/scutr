@@ -43,6 +43,34 @@ undersample.mindist <- function(data, cls, cls.col, m, dist.calc="euclidean"){
     return(d_prime)
 }
 
+#' Stratified index sample of different values in a vector.
+#'
+#' @param vec Vector of values to sample from.
+#' @param tot.sample The desired total number of samples.
+#'
+#' @return A vector of indices that can be used to select a balanced population of values from vec.
+#' @export
+#'
+#' @examples
+#' vec <- sample(1:5, 30, replace=TRUE)
+#' table(vec)
+#' sample.ind <- sample.classes(vec, 15)
+#' table(vec[sample.ind])
+sample.classes <- function(vec, tot.sample){
+    inds <- 1:length(vec)
+    samp.per.class <- ceiling(tot.sample / length(unique(vec)))
+    sample.ind <- sapply(unique(vec),
+                         function(x) {
+                             sample(inds[vec],
+                                    samp.per.class,
+                                    replace=samp.per.class > sum(vec == x))
+                         })
+    # transpose the resulting dataframe and trim.
+    # the transpose ensures that at least samp.per.class-1 instances
+    # from each cluster are included
+    return(t(sample.ind)[1:tot.sample])
+}
+
 #' Undersample a dataset by expectation-maximization algorithm.
 #'
 #' @param data Data to be undersampled.
@@ -50,7 +78,7 @@ undersample.mindist <- function(data, cls, cls.col, m, dist.calc="euclidean"){
 #' @param cls.col Class column.
 #' @param m Desired number of observations.
 #'
-#' @return The undersampled dataframe.
+#' @return The undersampled dataframe containing only instance of cls.
 #' @export
 #'
 #' @importFrom mclust Mclust
@@ -68,13 +96,34 @@ undersample.mclust <- function(data, cls, cls.col, m){
     # get cluster classification
     # class col is dropped bc it often results in only one cluster
     classif <- Mclust(subset[, -col.ind], verbose=F)$classification
-    # sample equal number of obs per cluster
-    inds <- 1:length(classif)
-    samp.per.clust <- ceiling(m / length(unique(classif)))
-    sample.ind <- sapply(unique(classif),
-                         function(x) {
-                             sample(inds[classif == x],
-                                    samp.per.clust,
-                                    replace=samp.per.clust > sum(classif == x))})[1:m]
-    return(subset[sample.ind, ])
+    sample.ind <- sample.classes(classif, m)
+    subset[sample.ind, ]
+}
+
+#' Undersample a dataset by kmeans clustering.
+#'
+#' @param data Dataset to be undersampled.
+#' @param cls Class to be undersampled.
+#' @param cls.col Column containing class information.
+#' @param m Desired number of samples.
+#' @param k Number of centers in clustering.
+#'
+#' @return The undersampled dataframe containing only instances of cls.
+#' @export
+#'
+#' @importFrom stats kmeans
+#'
+#' @examples
+#' table(iris$Species)
+#' undersamp <- undersample.kmeans(iris, "setosa", "Species", 15)
+#' nrow(undersamp)
+undersample.kmeans <- function(data, cls, cls.col, m, k=5){
+    # select the class to be undersampled
+    col.ind <- which(names(data) == cls.col)
+    subset <- data[data[[cls.col]] == cls, ]
+    # get cluster classification
+    # class col is dropped bc it often results in only one cluster
+    classif <- kmeans(subset[, -col.ind], centers=k)$cluster
+    sample.ind <- sample.classes(classif, m)
+    sample.ind
 }

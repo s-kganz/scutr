@@ -16,7 +16,7 @@ undersample.mclust(data, cls, cls.col, m)
 \item{m}{Desired number of observations.}
 }
 \value{
-The undersampled dataframe.
+The undersampled dataframe containing only instance of cls.
 }
 \description{
 Undersample a dataset by expectation-maximization algorithm.
