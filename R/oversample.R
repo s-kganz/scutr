@@ -9,9 +9,8 @@
 #' @export
 #'
 #' @examples
-#' setosa <- iris[iris$Species == "setosa", ]
-#' nrow(setosa)
-#' smoted <- oversample.smote(setosa, "setosa", "Species", 100)
+#' table(iris$Species)
+#' smoted <- oversample.smote(iris, "setosa", "Species", 100)
 #' nrow(smoted)
 oversample.smote <- function(data, cls, cls.col, m){
     col.ind <- which(names(data) == cls.col)

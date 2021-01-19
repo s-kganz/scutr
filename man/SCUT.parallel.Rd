@@ -33,6 +33,6 @@ data.frame
 This function balances multiclass training datasets.
 }
 \examples{
-SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
-SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
+# TIL that CRAN only allows 2 cores.
+SCUT.parallel(feed ~ ., chickwts, oversample="SMOTE", undersample="random", ncores=2)
 }

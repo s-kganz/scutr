@@ -132,8 +132,8 @@ SCUT <- function(form, data, oversample="SMOTE", undersample="mclust", ...) {
 #' @export
 #'
 #' @examples
-#' SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
-#' SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
+#' # TIL that CRAN only allows 2 cores.
+#' SCUT.parallel(feed ~ ., chickwts, oversample="SMOTE", undersample="random", ncores=2)
 SCUT.parallel <- function(form, data, ncores=parallel::detectCores()-2,
                           oversample="SMOTE", undersample="mclust", ...){
     cls.col <- as.character(form[[2]])
