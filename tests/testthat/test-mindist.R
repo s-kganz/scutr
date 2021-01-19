@@ -10,4 +10,3 @@ subset <- mindist.undersample(rand, "foo", "X2", 20)
 test_that("One dimensional datasets work", {
     expect_equal(nrow(subset), 20)
 })
-rm(wine)
