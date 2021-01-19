@@ -1,4 +1,3 @@
-data("wine")
 t1 <- wine[wine$type == 1, ]
 subset <- undersample.mindist(t1, 1, "type", 20)
 test_that("Undersampling makes the right number of samples", {
