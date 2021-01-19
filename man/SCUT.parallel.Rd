@@ -7,7 +7,7 @@
 SCUT.parallel(
   form,
   data,
-  ncores = doParallel::detectCores() - 2,
+  ncores = parallel::detectCores() - 2,
   oversample = "SMOTE",
   undersample = "mclust",
   ...

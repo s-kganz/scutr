@@ -1,5 +1,6 @@
-data("wine")
 wine$type <- as.factor(wine$type)
+
+imbalance <- imbalance[imbalance$class %in% c(1, 2, 10), ]
 
 context("Undersampling")
 m <- 50
@@ -21,7 +22,7 @@ test_that("custom functions work",{
 
 context("Oversampling")
 m <- 70
-oversamp <- do.oversample(wine, "SMOTE", "type", 3, m)
+oversamp <- do.oversample(imbalance, "SMOTE", "class", 2, 70)
 test_that("SMOTE produces correct number of samples", {
     expect_equal(nrow(oversamp), m)
 })

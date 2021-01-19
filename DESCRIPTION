@@ -15,6 +15,7 @@ RoxygenNote: 7.1.1
 Imports:
     smotefamily,
     doParallel,
+    parallel,
     foreach,
     mclust
 Depends: 
