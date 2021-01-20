@@ -39,8 +39,10 @@ do.oversample <- function(data, method, cls.col, cls, m, ...) {
 #' @examples do.undersample(iris, "mclust", "Species", "setosa", 30)
 do.undersample <- function(data, method, cls.col, cls, m, ...){
     # use the custom method to get the undersampled data
-    if (is.function(method))    { return(method(data, cls, cls.col, m, ...)) }
-    else if (method == "mclust"){ return(scutr::undersample.mclust(data, cls, cls.col, m)) }
+    if (is.function(method))     { return(method(data, cls, cls.col, m, ...)) }
+    else if (method == "mclust") { return(scutr::undersample.mclust(data, cls, cls.col, m)) }
+    else if (method == "kmeans") { return(scutr::undersample.kmeans(data, cls, cls.col, m)) }
+    else if (method == "mindist"){ return(scutr::undersample.mindist(data, cls, cls.col, m)) }
     else if (method == "random"){
         # simply pull m rows from the subset
         cls.ind <- c(1:nrow(data))[data[[cls.col]] == cls]

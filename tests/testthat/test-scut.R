@@ -1,39 +1,23 @@
-wine$type <- as.factor(wine$type)
-
-imbalance <- imbalance[imbalance$class %in% c(1, 2, 10), ]
-
-context("Undersampling")
-m <- 50
-undersamp <- do.undersample(wine, "mclust", "type", 2, m)
-test_that("mclust produces correct number of samples", {
-    expect_equal(nrow(undersamp), m)
+context("scut")
+scutted <- SCUT(type ~ ., wine)
+test_that("SCUT results have equal class distribution", {
+    counts <- table(scutted$type)
+    expect_true(all(counts == counts[[1]]))
 })
-undersamp <- do.undersample(wine, "random", "type", 2, m)
-test_that("random produces correct number of samples", {
-    expect_equal(nrow(undersamp), m)
+# speed it up w/ kmeans in the parallel version
+scutted <- SCUT.parallel(class ~ ., imbalance, undersample="kmeans", ncores=2)
+test_that("SCUT.parallel results have equal class distribution", {
+    counts <- table(scutted$class)
+    expect_true(all(counts == counts[[1]]))
 })
+
+# dummy func that follows the required signature
 foo <- function(data, cls, cls.col, m){
-    data[1:m, ]
+    subset <- data[data[[cls.col]] == cls, ]
+    subset[rep(1, m), ]
 }
-undersamp <- do.undersample(wine, foo, "type", 2, m)
-test_that("custom functions work",{
-    expect_equal(nrow(undersamp), m)
-})
-
-context("Oversampling")
-m <- 70
-oversamp <- do.oversample(imbalance, "SMOTE", "class", 2, 70)
-test_that("SMOTE produces correct number of samples", {
-    expect_equal(nrow(oversamp), m)
-})
-oversamp <- do.oversample(wine, "random", "type", 3, m)
-test_that("random produces correct number of samples", {
-    expect_equal(nrow(oversamp), m)
-})
-foo <- function(data, cls, cls.col, m){
-    data[rep(1, m), ]
-}
-oversamp <- do.oversample(wine, foo, "type", 3, m)
-test_that("custom functions work", {
-    expect_equal(nrow(oversamp), m)
+scutted <- SCUT(type ~ ., wine, undersample=foo)
+test_that("Custom functions are valid with SCUT", {
+    counts <- table(scutted$type)
+    expect_true(all(counts == counts[[1]]))
 })

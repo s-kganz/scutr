@@ -125,5 +125,5 @@ undersample.kmeans <- function(data, cls, cls.col, m, k=5){
     # class col is dropped bc it often results in only one cluster
     classif <- kmeans(subset[, -col.ind], centers=k)$cluster
     sample.ind <- sample.classes(classif, m)
-    sample.ind
+    subset[sample.ind, ]
 }
