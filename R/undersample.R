@@ -127,3 +127,32 @@ undersample.kmeans <- function(data, cls, cls.col, m, k=5){
     sample.ind <- sample.classes(classif, m)
     subset[sample.ind, ]
 }
+
+#' Undersample a dataset by hierarchical clustering.
+#'
+#' @param data Dataset to be undersampled.
+#' @param cls Majority class that will be undersampled.
+#' @param cls.col Column in data containing class memberships.
+#' @param m Desired number of samples in undersampled dataset.
+#' @param k Desired number of clusters to derive from clustering.
+#' @param h Desired height at which to cut the clustering tree. k must be NA for this to be used.
+#' @param dist.calc Distance calculation method.
+#'
+#' @return Undersampled dataframe containing only cls.
+#' @export
+#'
+#' @examples
+#' table(iris$Species)
+#' undersamp <- undersample.hclust(iris, "setosa", "Species", 15)
+#' nrow(undersamp)
+undersample.hclust <- function(data, cls, cls.col, m, k=5, h=NA, dist.calc="euclidean"){
+    # select the desired class
+    col.ind <- which(names(data) == cls.col)
+    subset <- data[data[[cls.col]] == cls, ]
+    # perform hierarchical clustering
+    d <- dist(subset, method=dist.calc)
+    tree <- hclust(d)
+    classif <- cutree(tree, k=k, h=h)
+    sample.ind <- sample.classes(classif, m)
+    subset[sample.ind, ]
+}
