@@ -141,6 +141,9 @@ undersample.kmeans <- function(data, cls, cls.col, m, k=5){
 #' @return Undersampled dataframe containing only cls.
 #' @export
 #'
+#' @importFrom stats cutree
+#' @importFrom stats hclust
+#'
 #' @examples
 #' table(iris$Species)
 #' undersamp <- undersample.hclust(iris, "setosa", "Species", 15)

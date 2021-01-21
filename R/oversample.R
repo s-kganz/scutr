@@ -8,6 +8,8 @@
 #' @return The oversampled dataset.
 #' @export
 #'
+#' @importFrom smotefamily SMOTE
+#'
 #' @examples
 #' table(iris$Species)
 #' smoted <- oversample.smote(iris, "setosa", "Species", 100)
@@ -20,7 +22,7 @@ oversample.smote <- function(data, cls, cls.col, m){
     # so SMOTE can execute in that case. This does not affect how data is synthesized
     if (ncol(data) == 2) {data$dummy__col__ <- 0}
     # perform SMOTE
-    smoteret <- smotefamily::SMOTE(data[, -col.ind], data[, col.ind])
+    smoteret <- SMOTE(data[, -col.ind], data[, col.ind])
     # rbind the original observations and sufficient samples of the synthetic ones
     orig <- smoteret$orig_P
     target.samp <- m - nrow(orig)
