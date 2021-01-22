@@ -1,8 +1,9 @@
-context("undersampling")
+context("general undersampling")
 rand <- data.frame(cbind(runif(100), as.factor(c(rep(1, 25), rep(2, 75)))))
 w_m <- sum(wine$type == 1) %/% 2
 r_m <- sum(rand$X2 == 2) %/% 2
-for (func in c(undersample.kmeans, undersample.mindist, undersample.mclust, undersample.hclust)) {
+for (func in c(undersample.kmeans, undersample.mindist, undersample.mclust, undersample.hclust,
+               undersample.tomek)) {
     subset <- func(wine, 1, "type", w_m)
     rownames(subset) <- 1:nrow(subset)
     test_that("Undersampling produces desired number of rows", {

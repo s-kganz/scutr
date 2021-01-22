@@ -136,7 +136,7 @@ undersample.kmeans <- function(data, cls, cls.col, m, k=5){
 #' @param m Desired number of samples in undersampled dataset.
 #' @param k Desired number of clusters to derive from clustering.
 #' @param h Desired height at which to cut the clustering tree. k must be NA for this to be used.
-#' @param dist.calc Distance calculation method.
+#' @param dist.calc Distance calculation method. See `dist`.
 #'
 #' @return Undersampled dataframe containing only cls.
 #' @export
@@ -158,4 +158,68 @@ undersample.hclust <- function(data, cls, cls.col, m, k=5, h=NA, dist.calc="eucl
     classif <- cutree(tree, k=k, h=h)
     sample.ind <- sample.classes(classif, m)
     subset[sample.ind, ]
+}
+
+#' Undersample a dataset by removing Tomek links.
+#'
+#' A Tomek link is a minority instance and majority instance that are each other's nearest neighbor. This function removes sufficient Tomek links that are an instance of cls to yield m instances of cls. If desired, samples are randomly discarded to yield m rows if insufficient Tomek links are in the data.
+#'
+#' @param data Dataset to be undersampled.
+#' @param cls Majority class to be undersampled.
+#' @param cls.col Column in data containing class memberships.
+#' @param m Desired number of samples in undersampled dataset.
+#' @param tomek Definition used to determine if a point is considered a minority in the Tomek link definition.
+#'  - `minor`: Minor classes are all those with fewer than `m` instances.
+#'  - `diff`: Minor classes are all those that aren't `cls`.
+#' @param force.m If `TRUE`, uses random undersampling to discard samples if insufficient Tomek links are present to yield `m`` rows of data.
+#' @param dist.calc Distance calculation method. See `dist`.
+#'
+#' @return Undersampled dataframe containing only `cls`.
+#' @export
+#'
+#' @importFrom stats dist
+#'
+#' @examples
+#' table(iris$Species)
+#' undersamp <- undersample.tomek(iris, "setosa", "Species", 15, tomek="diff", force.m=TRUE)
+#' nrow(undersamp)
+#' undersamp2 <- undersample.tomek(iris, "setosa", "Species", 15, tomek="diff", force.m=FALSE)
+#' nrow(undersamp2)
+undersample.tomek <- function(data, cls, cls.col, m, tomek="minor",
+                              force.m=T, dist.calc="euclidean"){
+    col.ind <- which(names(data) == cls.col)
+    n <- sum(data[[cls.col]] == cls)
+    # compute the distance matrix
+    dmtx <- as.matrix(dist(data[, -col.ind], method=dist.calc))
+    # set the diagonal to the largest value in the mtx so we can easily find the nearest non-self
+    # neighbor per row
+    diag(dmtx) <- max(dmtx)
+    # is_minor indicates which indices in the data should be considered minor classes
+    if (tomek == "minor") {
+        all_minors <- Filter(function(c) {
+                                sum(data[[cls.col]] == c) < m
+                    }, unique(data[[cls.col]]))
+        is_minor <- data[[cls.col]] %in% all_minors
+    } else if (tomek == "diff") {
+        is_minor <- data[[cls.col]] != cls
+    } else {
+        stop("Unrecognized Tomek link option: ", tomek)
+    }
+
+    nearest <- apply(dmtx, 1, function(row){which.min(row)})
+    tomeks <- Filter(function(ind) {
+                        nearest[ind] == ind && data[[cls.col]][ind] == cls
+                     }, nearest)
+    if (n - length(tomeks) <= m){
+        # sufficient tomeks to undersample down to m rows
+        tomeks <- tomeks[1:(n-m)]
+    } else if (force.m){
+        # not enough tomeks to undersample, fill in the gap with random undersampling
+        to_rem <- c(1:nrow(data))[data[[cls.col]] == cls]
+        to_rem <- to_rem[!(to_rem %in% tomeks)]
+        tomeks <- c(tomeks, sample(to_rem, n - m - length(tomeks)))
+    }
+    d_prime <- data[-tomeks[1:min(n-m, length(tomeks))], ]
+    d_prime <- d_prime[d_prime[[cls.col]] == cls, ]
+    return(d_prime)
 }
