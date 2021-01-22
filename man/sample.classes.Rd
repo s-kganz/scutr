@@ -9,10 +9,10 @@ sample.classes(vec, tot.sample)
 \arguments{
 \item{vec}{Vector of values to sample from.}
 
-\item{tot.sample}{The desired total number of samples.}
+\item{tot.sample}{Total number of samples.}
 }
 \value{
-A vector of indices that can be used to select a balanced population of values from vec.
+A vector of indices that can be used to select a balanced population of values from \code{vec}.
 }
 \description{
 Stratified index sample of different values in a vector.

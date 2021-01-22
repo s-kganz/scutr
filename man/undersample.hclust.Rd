@@ -21,16 +21,16 @@ undersample.hclust(
 
 \item{cls.col}{Column in data containing class memberships.}
 
-\item{m}{Desired number of samples in undersampled dataset.}
+\item{m}{Number of samples in undersampled dataset.}
 
-\item{k}{Desired number of clusters to derive from clustering.}
+\item{k}{Number of clusters to derive from clustering.}
 
-\item{h}{Desired height at which to cut the clustering tree. k must be NA for this to be used.}
+\item{h}{Height at which to cut the clustering tree. \code{k} must be \code{NA} for this to be used.}
 
-\item{dist.calc}{Distance calculation method.}
+\item{dist.calc}{Distance calculation method. See \code{dist}.}
 }
 \value{
-Undersampled dataframe containing only cls.
+Undersampled dataframe containing only \code{cls}.
 }
 \description{
 Undersample a dataset by hierarchical clustering.

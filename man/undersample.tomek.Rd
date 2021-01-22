@@ -29,7 +29,7 @@ undersample.tomek(
 \item \code{diff}: Minor classes are all those that aren't \code{cls}.
 }}
 
-\item{force.m}{If \code{TRUE}, uses random undersampling to discard samples if insufficient Tomek links are present to yield `m`` rows of data.}
+\item{force.m}{If \code{TRUE}, uses random undersampling to discard samples if insufficient Tomek links are present to yield \code{m} rows of data.}
 
 \item{dist.calc}{Distance calculation method. See \code{dist}.}
 }

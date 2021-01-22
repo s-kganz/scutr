@@ -2,7 +2,7 @@
 % Please edit documentation in R/undersample.R
 \name{undersample.mclust}
 \alias{undersample.mclust}
-\title{Undersample a dataset by expectation-maximization algorithm.}
+\title{Undersample a dataset by expectation-maximization clustering}
 \usage{
 undersample.mclust(data, cls, cls.col, m)
 }
@@ -13,13 +13,13 @@ undersample.mclust(data, cls, cls.col, m)
 
 \item{cls.col}{Class column.}
 
-\item{m}{Desired number of observations.}
+\item{m}{Number of samples in undersampled dataset.}
 }
 \value{
-The undersampled dataframe containing only instance of cls.
+The undersampled dataframe containing only instance of \code{cls}.
 }
 \description{
-Undersample a dataset by expectation-maximization algorithm.
+Undersample a dataset by expectation-maximization clustering
 }
 \examples{
 setosa <- iris[iris$Species == "setosa", ]

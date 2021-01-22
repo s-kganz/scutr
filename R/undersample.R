@@ -1,10 +1,10 @@
-#' Undersample a dataset by iteratively removing the observation with the lowest total distance to its neighbors.
+#' Undersample a dataset by iteratively removing the observation with the lowest total distance to its neighbors of the same class.
 #'
-#' @param data Dataset to undersample. Aside from cls.col, must be numeric.
+#' @param data Dataset to undersample. Aside from `cls.col`, must be numeric.
 #' @param cls.col Column containing class information.
 #' @param m Desired number of observations after undersampling.
-#' @param cls Unused, but kept here for compatability with do.undersample().
-#' @param dist.calc Method for distance calculation. Must be usable with dist().
+#' @param cls Unused, but kept here for compatability with `do.undersample()`.
+#' @param dist.calc Method for distance calculation. See `dist()`.
 #'
 #' @return An undersampled dataframe.
 #' @export
@@ -46,9 +46,9 @@ undersample.mindist <- function(data, cls, cls.col, m, dist.calc="euclidean"){
 #' Stratified index sample of different values in a vector.
 #'
 #' @param vec Vector of values to sample from.
-#' @param tot.sample The desired total number of samples.
+#' @param tot.sample Total number of samples.
 #'
-#' @return A vector of indices that can be used to select a balanced population of values from vec.
+#' @return A vector of indices that can be used to select a balanced population of values from `vec`.
 #' @export
 #'
 #' @examples
@@ -71,14 +71,14 @@ sample.classes <- function(vec, tot.sample){
     return(t(sample.ind)[1:tot.sample])
 }
 
-#' Undersample a dataset by expectation-maximization algorithm.
+#' Undersample a dataset by expectation-maximization clustering
 #'
 #' @param data Data to be undersampled.
 #' @param cls Class to be undersampled.
 #' @param cls.col Class column.
-#' @param m Desired number of observations.
+#' @param m Number of samples in undersampled dataset.
 #'
-#' @return The undersampled dataframe containing only instance of cls.
+#' @return The undersampled dataframe containing only instance of `cls`.
 #' @export
 #'
 #' @importFrom mclust Mclust
@@ -105,10 +105,10 @@ undersample.mclust <- function(data, cls, cls.col, m){
 #' @param data Dataset to be undersampled.
 #' @param cls Class to be undersampled.
 #' @param cls.col Column containing class information.
-#' @param m Desired number of samples.
+#' @param m Number of samples in undersampled dataset.
 #' @param k Number of centers in clustering.
 #'
-#' @return The undersampled dataframe containing only instances of cls.
+#' @return The undersampled dataframe containing only instances of `cls`.
 #' @export
 #'
 #' @importFrom stats kmeans
@@ -133,12 +133,12 @@ undersample.kmeans <- function(data, cls, cls.col, m, k=5){
 #' @param data Dataset to be undersampled.
 #' @param cls Majority class that will be undersampled.
 #' @param cls.col Column in data containing class memberships.
-#' @param m Desired number of samples in undersampled dataset.
-#' @param k Desired number of clusters to derive from clustering.
-#' @param h Desired height at which to cut the clustering tree. k must be NA for this to be used.
+#' @param m Number of samples in undersampled dataset.
+#' @param k Number of clusters to derive from clustering.
+#' @param h Height at which to cut the clustering tree. `k` must be `NA` for this to be used.
 #' @param dist.calc Distance calculation method. See `dist`.
 #'
-#' @return Undersampled dataframe containing only cls.
+#' @return Undersampled dataframe containing only `cls`.
 #' @export
 #'
 #' @importFrom stats cutree
@@ -171,7 +171,7 @@ undersample.hclust <- function(data, cls, cls.col, m, k=5, h=NA, dist.calc="eucl
 #' @param tomek Definition used to determine if a point is considered a minority in the Tomek link definition.
 #'  - `minor`: Minor classes are all those with fewer than `m` instances.
 #'  - `diff`: Minor classes are all those that aren't `cls`.
-#' @param force.m If `TRUE`, uses random undersampling to discard samples if insufficient Tomek links are present to yield `m`` rows of data.
+#' @param force.m If `TRUE`, uses random undersampling to discard samples if insufficient Tomek links are present to yield `m` rows of data.
 #' @param dist.calc Distance calculation method. See `dist`.
 #'
 #' @return Undersampled dataframe containing only `cls`.

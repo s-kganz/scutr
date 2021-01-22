@@ -13,12 +13,12 @@ undersample.kmeans(data, cls, cls.col, m, k = 5)
 
 \item{cls.col}{Column containing class information.}
 
-\item{m}{Desired number of samples.}
+\item{m}{Number of samples in undersampled dataset.}
 
 \item{k}{Number of centers in clustering.}
 }
 \value{
-The undersampled dataframe containing only instances of cls.
+The undersampled dataframe containing only instances of \code{cls}.
 }
 \description{
 Undersample a dataset by kmeans clustering.

@@ -2,26 +2,26 @@
 % Please edit documentation in R/undersample.R
 \name{undersample.mindist}
 \alias{undersample.mindist}
-\title{Undersample a dataset by iteratively removing the observation with the lowest total distance to its neighbors.}
+\title{Undersample a dataset by iteratively removing the observation with the lowest total distance to its neighbors of the same class.}
 \usage{
 undersample.mindist(data, cls, cls.col, m, dist.calc = "euclidean")
 }
 \arguments{
-\item{data}{Dataset to undersample. Aside from cls.col, must be numeric.}
+\item{data}{Dataset to undersample. Aside from \code{cls.col}, must be numeric.}
 
-\item{cls}{Unused, but kept here for compatability with do.undersample().}
+\item{cls}{Unused, but kept here for compatability with \code{do.undersample()}.}
 
 \item{cls.col}{Column containing class information.}
 
 \item{m}{Desired number of observations after undersampling.}
 
-\item{dist.calc}{Method for distance calculation. Must be usable with dist().}
+\item{dist.calc}{Method for distance calculation. See \code{dist()}.}
 }
 \value{
 An undersampled dataframe.
 }
 \description{
-Undersample a dataset by iteratively removing the observation with the lowest total distance to its neighbors.
+Undersample a dataset by iteratively removing the observation with the lowest total distance to its neighbors of the same class.
 }
 \examples{
 setosa <- iris[iris$Species == "setosa", ]
