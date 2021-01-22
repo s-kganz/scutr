@@ -187,39 +187,38 @@ undersample.hclust <- function(data, cls, cls.col, m, k=5, h=NA, dist.calc="eucl
 #' nrow(undersamp2)
 undersample.tomek <- function(data, cls, cls.col, m, tomek="minor",
                               force.m=T, dist.calc="euclidean"){
-    col.ind <- which(names(data) == cls.col)
-    n <- sum(data[[cls.col]] == cls)
-    # compute the distance matrix
-    dmtx <- as.matrix(dist(data[, -col.ind], method=dist.calc))
-    # set the diagonal to the largest value in the mtx so we can easily find the nearest non-self
-    # neighbor per row
+    cls.vec <- data[[cls.col]]
+    if (tomek == "diff"){
+        is.minor <- cls.vec != cls
+    } else if (tomek == "minor"){
+        minor.classes <- Filter(function(c) sum(cls.vec == c) < m, unique(cls.vec))
+        is.minor <- cls.vec %in% minor.classes
+    }
+    dmtx <- as.matrix(dist(data[, -which(names(data) == cls.col)], method=dist.calc))
     diag(dmtx) <- max(dmtx)
-    # is_minor indicates which indices in the data should be considered minor classes
-    if (tomek == "minor") {
-        all_minors <- Filter(function(c) {
-                                sum(data[[cls.col]] == c) < m
-                    }, unique(data[[cls.col]]))
-        is_minor <- data[[cls.col]] %in% all_minors
-    } else if (tomek == "diff") {
-        is_minor <- data[[cls.col]] != cls
-    } else {
-        stop("Unrecognized Tomek link option: ", tomek)
-    }
 
-    nearest <- apply(dmtx, 1, function(row){which.min(row)})
-    tomeks <- Filter(function(ind) {
-                        nearest[ind] == ind && data[[cls.col]][ind] == cls
-                     }, nearest)
-    if (n - length(tomeks) <= m){
-        # sufficient tomeks to undersample down to m rows
-        tomeks <- tomeks[1:(n-m)]
-    } else if (force.m){
-        # not enough tomeks to undersample, fill in the gap with random undersampling
-        to_rem <- c(1:nrow(data))[data[[cls.col]] == cls]
-        to_rem <- to_rem[!(to_rem %in% tomeks)]
-        tomeks <- c(tomeks, sample(to_rem, n - m - length(tomeks)))
+    tomeks <- c()
+    to.remove <- sum(cls.vec == cls) - m
+    while (length(tomeks) < to.remove){
+        # determine all the tomek links in the data
+        nearest <- apply(dmtx, 1, which.min)
+        new.tomeks <- Filter(function(x){
+            neighbor <- nearest[x]
+            nearest[neighbor] == x && cls.vec[x] == cls &&
+                !(x %in% tomeks) && is.minor[neighbor]
+            }, 1:length(nearest))
+        if (length(new.tomeks) == 0) break
+        tomeks <- c(tomeks, new.tomeks)
+        dmtx[, new.tomeks] <- max(dmtx)
     }
-    d_prime <- data[-tomeks[1:min(n-m, length(tomeks))], ]
-    d_prime <- d_prime[d_prime[[cls.col]] == cls, ]
-    return(d_prime)
+    if (length(tomeks) < to.remove && force.m){
+        # add more indices until we get enough
+        maybe.drop <- Filter(
+            function(x) !(x %in% tomeks) && cls.vec[x] == cls,
+            c(1:nrow(data)))
+        tomeks <- c(tomeks, sample(maybe.drop, to.remove - length(tomeks)))
+    }
+    # drop the Tomek links then filter to the class of interest
+    d_prime <- data[-tomeks, ]
+    d_prime[d_prime[[cls.col]] == cls, ]
 }

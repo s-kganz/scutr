@@ -4,7 +4,7 @@ test_that("SCUT results have equal class distribution", {
     counts <- table(scutted$type)
     expect_true(all(counts == counts[[1]]))
 })
-# speed it up w/ kmeans in the parallel version
+# use kmeans in the parallel version so it completes in a reasonable amount of time
 scutted <- SCUT.parallel(class ~ ., imbalance, undersample="kmeans", ncores=2)
 test_that("SCUT.parallel results have equal class distribution", {
     counts <- table(scutted$class)
