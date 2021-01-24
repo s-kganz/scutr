@@ -206,12 +206,13 @@ undersample.tomek <- function(data, cls, cls.col, m, tomek="minor",
             neighbor <- nearest[x]
             nearest[neighbor] == x && cls.vec[x] == cls &&
                 !(x %in% tomeks) && is.minor[neighbor]
-            }, 1:length(nearest))
+            }, nearest)
+        new.tomeks <- new.tomeks[!duplicated(new.tomeks)]
         if (length(new.tomeks) == 0) break
         tomeks <- c(tomeks, new.tomeks)
         dmtx[, new.tomeks] <- max(dmtx)
     }
-    if (length(tomeks) < to.remove && force.m){
+    if ((length(tomeks) < to.remove) && force.m){
         # add more indices until we get enough
         maybe.drop <- Filter(
             function(x) !(x %in% tomeks) && cls.vec[x] == cls,
@@ -219,6 +220,8 @@ undersample.tomek <- function(data, cls, cls.col, m, tomek="minor",
         tomeks <- c(tomeks, sample(maybe.drop, to.remove - length(tomeks)))
     }
     # drop the Tomek links then filter to the class of interest
-    d_prime <- data[-tomeks, ]
+    if (length(tomeks) > 0) {d_prime <- data[-tomeks, ]}
+    else {d_prime <- data}
+
     d_prime[d_prime[[cls.col]] == cls, ]
 }
