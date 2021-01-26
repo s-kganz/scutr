@@ -7,20 +7,20 @@
 do.undersample(data, method, cls.col, cls, m, ...)
 }
 \arguments{
-\item{data}{data.frame}
+\item{data}{Data frame to be undersampled.}
 
-\item{method}{character}
+\item{method}{Undersampling method to use. See \code{?SCUT} for more information.}
 
-\item{cls.col}{character}
+\item{cls.col}{Column in \code{data} containing class membership.}
 
-\item{cls}{character}
+\item{cls}{Class to undersample.}
 
-\item{m}{integer}
+\item{m}{Desired number of rows in undersampled data frame.}
 
-\item{...}{Other options passed to custom function.}
+\item{...}{Other parameters passed to undersampling function.}
 }
 \value{
-data.frame
+Undersampled data frame.
 }
 \description{
 Undersampling driver function.

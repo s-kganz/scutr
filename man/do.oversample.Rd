@@ -7,17 +7,17 @@
 do.oversample(data, method, cls.col, cls, m, ...)
 }
 \arguments{
-\item{data}{data.frame}
+\item{data}{Data frame to be oversampled.}
 
-\item{method}{character}
+\item{method}{Oversampling method to use. See \code{?SCUT} for more information.}
 
-\item{cls.col}{character}
+\item{cls.col}{Column in \code{data} containing class membership.}
 
-\item{cls}{character}
+\item{cls}{Class to be oversampled.}
 
-\item{m}{integer}
+\item{m}{Desired number of samples in oversampled data frame.}
 
-\item{...}{Other options passed to custom function.}
+\item{...}{Other parameters passed to oversampling function.}
 }
 \value{
 data.frame

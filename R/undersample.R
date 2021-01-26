@@ -34,9 +34,10 @@ undersample.mindist <- function(data, cls, cls.col, m, dist.calc="euclidean"){
         # calculate the index of the minimum rowSum
         min.ind <- which.min(rowSums(dist.mtx))
         # add the rowname at that index to the discard pile
-        discard.inds <- c(discard.inds, rownames(dist.mtx)[min.ind])
-        # remove the row/col from distance matrix
-        dist.mtx <- dist.mtx[-min.ind, -min.ind]
+        discard.inds <- c(discard.inds, min.ind)
+        # eliminate that row/col from affecting further calculation
+        dist.mtx[, min.ind] <- 0
+        dist.mtx[min.ind, ] <- max(dist.mtx)
     }
     d_prime <- subset[-as.integer(discard.inds), ]
     rownames(d_prime) <- 1:nrow(d_prime)
