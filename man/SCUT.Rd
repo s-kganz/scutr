@@ -8,8 +8,8 @@
 SCUT(
   form,
   data,
-  oversample = "SMOTE",
-  undersample = "mclust",
+  oversample = oversample.smote,
+  undersample = undersample.mclust,
   osamp.opts = list(),
   usamp.opts = list()
 )
@@ -18,8 +18,8 @@ SCUT.parallel(
   form,
   data,
   ncores = 2,
-  oversample = "SMOTE",
-  undersample = "mclust",
+  oversample = oversample.smote,
+  undersample = undersample.mclust,
   osamp.opts = list(),
   usamp.opts = list()
 )
@@ -29,20 +29,9 @@ SCUT.parallel(
 
 \item{data}{Numeric data frame containing all variables given in \code{form}.}
 
-\item{oversample}{Oversampling method. Must be one of:
-\itemize{
-\item SMOTE: Synthetic minority oversampling. Generates new data points between neighboring points.
-\item random: Randomly duplicate rows in the data frame until the desired num
-}}
+\item{oversample}{Oversampling method. Must be a function with the signature \verb{foo(data, cls, cls.col, m, ...} that returns a data frame or one of \verb{oversample.*()}.}
 
-\item{undersample}{Undersampling method. Must be a function with the signature \code{foo(data, cls, cls.col, m, ...)} that returns a data frame or one of:
-\itemize{
-\item \code{"mindist"}: The data point with the lowest average distance to all other datapoints in the data is removed until the desired number of instances is reached.
-\item \code{"mclust"}: Representative samples are taken from the results of model-based clustering.
-\item \code{"kmeans"}: Same as \code{"mclust"}, but uses k-means clustering.
-\item \code{"hclust"}: Same as \code{"mclust"}, but uses hierarchical clustering.
-\item \code{"tomek"}: Iteratively removes Tomek links from the data until either the desired number of data points remain or until no more Tomek links are present. If desired, random undersampling ensures the correct number of instances is returned.
-}}
+\item{undersample}{Undersampling method. Must be a function with the signature \code{foo(data, cls, cls.col, m, ...)} that returns a data frame or one of \verb{undersample.*()}.}
 
 \item{osamp.opts}{Custom options passed to the oversampling function.}
 
@@ -54,10 +43,13 @@ SCUT.parallel(
 A dataframe with equal class distribution.
 }
 \description{
-This function balances multiclass training datasets. In a dataframe with \code{n} classes and \code{m} rows, the resulting dataframe will have \code{m / n} rows per class. \code{SCUT.parallel()} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{"mclust"}).
+This function balances multiclass training datasets. In a dataframe with \code{n} classes and \code{m} rows, the resulting dataframe will have \code{m / n} rows per class. \code{SCUT.parallel()} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{mclust}).
 }
 \examples{
-SCUT(Species ~ ., iris, oversample="SMOTE", undersample="mclust")
-SCUT(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
-SCUT.parallel(feed ~ ., chickwts, oversample="SMOTE", undersample="random")
+SCUT(Species ~ ., iris)
+SCUT(feed ~ ., chickwts, undersample=undersample.kmeans)
+\donttest{
+ret <- SCUT.parallel(type ~ ., wine, undersample=undersample.kmeans)
+table(ret$type)
+}
 }

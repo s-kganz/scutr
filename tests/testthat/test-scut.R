@@ -1,7 +1,10 @@
 context("scut")
-for (osamp in c("SMOTE", "random")){
-    for (usamp in c("mclust", "kmeans", "hclust", "mindist", "tomek")){
-        scutted <- SCUT(type ~ ., wine, oversample=osamp, undersample=usamp)
+scutenv <- as.environment("package:scutr")
+oversamplers <- ls(envir=scutenv, pattern='oversample.*')
+undersamplers <- ls(envir=scutenv, pattern='undersample.*')
+for (osamp in oversamplers){
+    for (usamp in undersamplers){
+        scutted <- SCUT(type ~ ., wine, oversample=get(osamp), undersample=get(usamp))
         counts <- table(scutted$type)
         test_that(paste(osamp, usamp, "have equal class distribution"), {
             expect_true(all(counts == counts[[1]]))
@@ -22,12 +25,12 @@ foo <- function(data, cls, cls.col, m){
     subset[rep(1, m), ]
 }
 scutted <- SCUT(type ~ ., wine, undersample=foo)
-test_that("Custom functions are valid with SCUT", {
+test_that("Custom functions work", {
     counts <- table(scutted$type)
     expect_true(all(counts == counts[[1]]))
 })
 
-scutted <- SCUT(type ~ ., wine, undersample="kmeans", usamp.opts = list(k=7))
+scutted <- SCUT(type ~ ., wine, undersample=undersample.kmeans, usamp.opts = list(k=7))
 test_that("Custom arguments are passed correctly", {
     counts <- table(scutted$type)
     expect_true(all(counts == counts[[1]]))

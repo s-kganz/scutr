@@ -2,8 +2,6 @@
 
 export(SCUT)
 export(SCUT.parallel)
-export(do.oversample)
-export(do.undersample)
 export(oversample.smote)
 export(sample.classes)
 export(undersample.hclust)
