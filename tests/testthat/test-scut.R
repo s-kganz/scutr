@@ -4,18 +4,11 @@ oversamplers <- ls(envir=scutenv, pattern='oversample.*')
 undersamplers <- ls(envir=scutenv, pattern='undersample.*')
 for (osamp in oversamplers){
     for (usamp in undersamplers){
-        scutted <- SCUT(type ~ ., wine, oversample=get(osamp), undersample=get(usamp))
+        scutted <- SCUT(wine, "type", oversample=get(osamp), undersample=get(usamp))
         counts <- table(scutted$type)
         test_that(paste(osamp, usamp, "have equal class distribution"), {
             expect_true(all(counts == counts[[1]]))
         })
-        # skip mclust in parallel test because it's really slow
-        # if (usamp == "mclust") next
-        # scutted <- SCUT.parallel(type ~ ., wine, oversample=osamp, underample=usamp)
-        # counts <- table(scutted$type)
-        # test_that(paste(osamp, usamp, "have equal class distribution in parallel version"), {
-        #     expect_true(all(counts == counts[[1]]))
-        # })
     }
 }
 
@@ -24,15 +17,28 @@ foo <- function(data, cls, cls.col, m){
     subset <- data[data[[cls.col]] == cls, ]
     subset[rep(1, m), ]
 }
-scutted <- SCUT(type ~ ., wine, undersample=foo)
+scutted <- SCUT(wine, "type", undersample=foo)
 test_that("Custom functions work", {
     counts <- table(scutted$type)
     expect_true(all(counts == counts[[1]]))
 })
 
-scutted <- SCUT(type ~ ., wine, undersample=undersample.kmeans, usamp.opts = list(k=7))
+scutted <- SCUT(wine, "type", undersample=undersample.kmeans, usamp.opts = list(k=7))
 test_that("Custom arguments are passed correctly", {
     counts <- table(scutted$type)
     expect_true(all(counts == counts[[1]]))
-    expect_error(SCUT(type ~ ., wine, osamp.opts=list(k=7)))
+    expect_error(SCUT(wine, "type", osamp.opts=list(k=7)),
+                 regexp="unused argument*")
+})
+
+context("bad input")
+bad <- wine
+bad$x1 <- as.character(bad$x1)
+test_that("Non numeric columns are not allowed", {
+    expect_error(SCUT(bad, "type"),
+                 regexp="*Data frame must be only numeric*")
+})
+test_that("Class column must be present", {
+    expect_error(SCUT(bad, "foo"),
+                 regexp="Column not found in data*")
 })

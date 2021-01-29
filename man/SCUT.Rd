@@ -6,8 +6,8 @@
 \title{SMOTE and cluster-based undersampling technique.}
 \usage{
 SCUT(
-  form,
   data,
+  cls.col,
   oversample = oversample.smote,
   undersample = undersample.mclust,
   osamp.opts = list(),
@@ -15,8 +15,8 @@ SCUT(
 )
 
 SCUT.parallel(
-  form,
   data,
+  cls.col,
   ncores = 2,
   oversample = oversample.smote,
   undersample = undersample.mclust,
@@ -25,19 +25,19 @@ SCUT.parallel(
 )
 }
 \arguments{
-\item{form}{A formula describing the prediction task. This is generally of the form \code{cls.col ~ .}, where \code{cls.col} is the column with class membership in the input data. If specific variables are indicated in the right hand side, the input data will be subsetted to only those columns.}
-
 \item{data}{Numeric data frame containing all variables given in \code{form}.}
 
-\item{oversample}{Oversampling method. Must be a function with the signature \verb{foo(data, cls, cls.col, m, ...} that returns a data frame or one of \verb{oversample.*()}.}
+\item{cls.col}{The column in \code{data} with class membership.}
 
-\item{undersample}{Undersampling method. Must be a function with the signature \code{foo(data, cls, cls.col, m, ...)} that returns a data frame or one of \verb{undersample.*()}.}
+\item{oversample}{Oversampling method. Must be a function with the signature \verb{foo(data, cls, cls.col, m, ...} that returns a data frame, one of the \verb{oversample.*} functions, or \code{sample.random}.}
+
+\item{undersample}{Undersampling method. Must be a function with the signature \code{foo(data, cls, cls.col, m, ...)} that returns a data frame, one of the \verb{undersample.*} functions, or \code{sample.random}.}
 
 \item{osamp.opts}{Custom options passed to the oversampling function.}
 
 \item{usamp.opts}{Custom options passed to the undersampling function.}
 
-\item{ncores}{Number of cores to use with \code{SCUT.parallel()}.}
+\item{ncores}{Number of cores to use with \code{SCUT.parallel}.}
 }
 \value{
 A dataframe with equal class distribution.
@@ -46,10 +46,12 @@ A dataframe with equal class distribution.
 This function balances multiclass training datasets. In a dataframe with \code{n} classes and \code{m} rows, the resulting dataframe will have \code{m / n} rows per class. \code{SCUT.parallel()} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{mclust}).
 }
 \examples{
-SCUT(Species ~ ., iris)
-SCUT(feed ~ ., chickwts, undersample=undersample.kmeans)
+ret <- SCUT(iris, "Species")
+ret2 <- SCUT(chickwts, "feed", undersample=undersample.kmeans)
+table(ret$Species)
+table(ret2$feed)
 \donttest{
-ret <- SCUT.parallel(type ~ ., wine, undersample=undersample.kmeans)
+ret <- SCUT.parallel(wine, "type", undersample=undersample.kmeans)
 table(ret$type)
 }
 }
