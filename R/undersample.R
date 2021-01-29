@@ -40,7 +40,6 @@ undersample.mindist <- function(data, cls, cls.col, m, dist.calc="euclidean"){
         dist.mtx[min.ind, ] <- max(dist.mtx)
     }
     d_prime <- subset[-as.integer(discard.inds), ]
-    rownames(d_prime) <- 1:nrow(d_prime)
     return(d_prime)
 }
 
@@ -62,9 +61,14 @@ sample.classes <- function(vec, tot.sample){
     samp.per.class <- ceiling(tot.sample / length(unique(vec)))
     sample.ind <- sapply(unique(vec),
                          function(x) {
-                             sample(inds[vec],
-                                    samp.per.class,
-                                    replace=samp.per.class > sum(vec == x))
+                             this.class <- inds[vec == x]
+                             if (length(this.class) == 1){
+                                 rep(this.class, samp.per.class)
+                             } else {
+                                 sample(this.class,
+                                        samp.per.class,
+                                        replace=samp.per.class > sum(vec == x))
+                             }
                          })
     # transpose the resulting dataframe and trim.
     # the transpose ensures that at least samp.per.class-1 instances
@@ -226,3 +230,30 @@ undersample.tomek <- function(data, cls, cls.col, m, tomek="minor",
 
     d_prime[d_prime[[cls.col]] == cls, ]
 }
+
+#' Randomly resample a dataset.
+#'
+#' This function is used to resample a dataset by randomly removing or duplicating rows. It is usable for both oversampling and undersampling.
+#'
+#' @param data Dataframe to be resampled.
+#' @param cls Class that should be randomly resampled.
+#' @param cls.col Column containing class information.
+#' @param m Desired number of samples.
+#'
+#' @return Resampled dataframe containing only `cls`.
+#' @export
+#'
+#' @examples
+#' set.seed(1234)
+#' only2 <- undersample.random(wine, 2, "type", 15)
+undersample.random <- function(data, cls, cls.col, m){
+    subset <- data[data[[cls.col]] == cls, ]
+    if (m > nrow(subset)) {inds <- 1:nrow(subset)}
+    else {inds <- c()}
+    inds <- c(inds, sample.int(nrow(subset),
+                               size=m - length(inds),
+                               replace=(m-length(inds)) > nrow(subset)))
+    subset[inds, ]
+}
+
+oversample.random <- undersample.random
