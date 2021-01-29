@@ -1,7 +1,7 @@
 context("scut")
 scutenv <- as.environment("package:scutr")
-oversamplers <- ls(envir=scutenv, pattern='oversample.*')
-undersamplers <- ls(envir=scutenv, pattern='undersample.*')
+oversamplers <- c(ls(envir=scutenv, pattern='oversample.*'), "resample.random")
+undersamplers <- c(ls(envir=scutenv, pattern='undersample.*'), "resample.random")
 for (osamp in oversamplers){
     for (usamp in undersamplers){
         scutted <- SCUT(wine, "type", oversample=get(osamp), undersample=get(usamp))
