@@ -5,9 +5,8 @@ undersamplers <- c(ls(envir=scutenv, pattern='undersample.*'), "resample.random"
 for (osamp in oversamplers){
     for (usamp in undersamplers){
         scutted <- SCUT(wine, "type", oversample=get(osamp), undersample=get(usamp))
-        counts <- table(scutted$type)
         test_that(paste(osamp, usamp, "have equal class distribution"), {
-            expect_true(all(counts == counts[[1]]))
+            expect_true(balanced.table(scutted$type))
         })
     }
 }
@@ -18,15 +17,13 @@ foo <- function(data, cls, cls.col, m){
     subset[rep(1, m), ]
 }
 scutted <- SCUT(wine, "type", undersample=foo)
-test_that("Custom functions work", {
-    counts <- table(scutted$type)
-    expect_true(all(counts == counts[[1]]))
+test_that("Custom functions can be passed", {
+    expect_true(strictly.balanced(scutted$type))
 })
 
 scutted <- SCUT(wine, "type", undersample=undersample.kmeans, usamp.opts = list(k=7))
 test_that("Custom arguments are passed correctly", {
-    counts <- table(scutted$type)
-    expect_true(all(counts == counts[[1]]))
+    expect_true(strictly.balanced(scutted$type))
     expect_error(SCUT(wine, "type", osamp.opts=list(k=7)),
                  regexp="unused argument*")
 })
@@ -41,4 +38,10 @@ test_that("Non numeric columns are not allowed", {
 test_that("Class column must be present", {
     expect_error(SCUT(bad, "foo"),
                  regexp="Column not found in data*")
+})
+bad$x1 <- as.numeric(bad$x1)
+bad$x1[1] <- NA
+test_that("NAs are not allowed", {
+    expect_error(SCUT(bad, "type"),
+                 regexp="Data frame cannot contain NAs.")
 })

@@ -13,6 +13,9 @@ validate.dataset <- function(data, cls.col){
     if (sum(!unlist(lapply(data, is.numeric))) == is.numeric(data[[cls.col]])){
         stop("Data frame must be only numeric besides the class column.")
     }
+    if (any(is.na(data))){
+        stop("Data frame cannot contain NAs.")
+    }
 }
 
 #' SMOTE and cluster-based undersampling technique.
