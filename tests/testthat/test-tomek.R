@@ -3,7 +3,6 @@ context("Tomek undersampling")
 # make a synthetic dataset
 # both "b" points at x < 0.0 become Tomek links. The one at -0.1 is removed first
 # followed by the one at -0.5
-set.seed(1234)
 x1 <- runif(10, 0.5, 1)
 x2 <- c(-0.1, -0.5, -0.1)
 y  <- c(runif(10), c(0.6, 0.4, 0.5))

@@ -1,4 +1,4 @@
-context("oversampling")
+context("general oversampling")
 for (w_cls in unique(wine$type)){
     w_m <- sum(wine$type == w_cls) * 2
     for (func in c(oversample.smote)) {

@@ -16,3 +16,6 @@ strictly.balanced <- function(vector){
     counts <- table(vector)
     all(max(counts) == counts)
 }
+
+# set the random seed for reproducibility
+set.seed(1234)

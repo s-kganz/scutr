@@ -1,4 +1,17 @@
 context("scut")
+
+# Get the core limit if we are running on R CMD check
+# https://stackoverflow.com/questions/50571325/r-cran-check-fail-when-using-parallel-functions
+chk <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+
+if (nzchar(chk) && chk == "TRUE") {
+    # use 2 cores in CRAN/Travis/AppVeyor
+    ncores <- 2L
+} else {
+    # use all cores in devtools::test()
+    ncores <- parallel::detectCores()
+}
+
 scutenv <- as.environment("package:scutr")
 oversamplers <- c(ls(envir=scutenv, pattern='oversample.*'), "resample.random")
 undersamplers <- c(ls(envir=scutenv, pattern='undersample.*'), "resample.random")
@@ -6,7 +19,13 @@ for (osamp in oversamplers){
     for (usamp in undersamplers){
         scutted <- SCUT(wine, "type", oversample=get(osamp), undersample=get(usamp))
         test_that(paste(osamp, usamp, "have equal class distribution"), {
-            expect_true(balanced.table(scutted$type))
+            expect_true(strictly.balanced(scutted$type))
+        })
+
+        scutted <- SCUT.parallel(wine, "type", ncores=ncores, oversample=get(osamp),
+                                 undersample=get(usamp))
+        test_that(paste(osamp, usamp, "(parallel) have equal class distribution"), {
+            expect_true(strictly.balanced(scutted$type))
         })
     }
 }

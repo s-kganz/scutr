@@ -1,5 +1,4 @@
-context("test cluster sampling")
-set.seed(1234)
+context("cluster sampling")
 
 # Whole bunch of random inputs
 for (limit in 1:10){
@@ -12,9 +11,14 @@ for (limit in 1:10){
     }
 }
 
-# Test classes that only show up once
 vec <- c(1, 2, rep(3, 97))
 test_that("classes with one instance are sampled correctly", {
     samp <- vec[sample.classes(vec, 30)]
+    expect_true(loosely.balanced(samp))
+})
+
+vec <- 1:10
+test_that("case where classes must be dropped trims output", {
+    samp <- vec[sample.classes(vec, 7)]
     expect_true(loosely.balanced(samp))
 })

@@ -1,5 +1,4 @@
 context("general undersampling")
-set.seed(1234)
 rand <- data.frame(cbind(runif(100), as.factor(c(rep(1, 25), rep(2, 75)))))
 w_m <- sum(wine$type == 1) %/% 2
 r_m <- sum(rand$X2 == 2) %/% 2
