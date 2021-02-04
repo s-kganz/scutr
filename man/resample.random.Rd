@@ -23,5 +23,5 @@ This function is used to resample a dataset by randomly removing or duplicating 
 }
 \examples{
 set.seed(1234)
-only2 <- undersample.random(wine, 2, "type", 15)
+only2 <- resample.random(wine, 2, "type", 15)
 }

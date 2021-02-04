@@ -245,7 +245,7 @@ undersample.tomek <- function(data, cls, cls.col, m, tomek="minor",
 #'
 #' @examples
 #' set.seed(1234)
-#' only2 <- undersample.random(wine, 2, "type", 15)
+#' only2 <- resample.random(wine, 2, "type", 15)
 resample.random <- function(data, cls, cls.col, m){
     subset <- data[data[[cls.col]] == cls, ]
     if (m > nrow(subset)) {inds <- 1:nrow(subset)}

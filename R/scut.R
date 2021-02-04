@@ -82,15 +82,14 @@ SCUT <- function(data, cls.col, oversample=oversample.smote,
 #'
 #' @export
 #'
+#' @importFrom parallel detectCores
 #' @importFrom doParallel registerDoParallel stopImplicitCluster
 #' @importFrom foreach foreach `%dopar%`
 #'
 #' @examples
-#' \donttest{
-#' ret <- SCUT.parallel(wine, "type", undersample=undersample.kmeans)
+#' ret <- SCUT.parallel(wine, "type", ncores=2, undersample=undersample.kmeans)
 #' table(ret$type)
-#' }
-SCUT.parallel <- function(data, cls.col, ncores=2,
+SCUT.parallel <- function(data, cls.col, ncores=detectCores() %/% 2,
                           oversample=oversample.smote, undersample=undersample.mclust,
                           osamp.opts=list(), usamp.opts=list()){
     validate.dataset(data, cls.col)

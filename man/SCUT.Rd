@@ -17,7 +17,7 @@ SCUT(
 SCUT.parallel(
   data,
   cls.col,
-  ncores = 2,
+  ncores = detectCores()\%/\%2,
   oversample = oversample.smote,
   undersample = undersample.mclust,
   osamp.opts = list(),
@@ -50,8 +50,6 @@ ret <- SCUT(iris, "Species")
 ret2 <- SCUT(chickwts, "feed", undersample=undersample.kmeans)
 table(ret$Species)
 table(ret2$feed)
-\donttest{
-ret <- SCUT.parallel(wine, "type", undersample=undersample.kmeans)
+ret <- SCUT.parallel(wine, "type", ncores=2, undersample=undersample.kmeans)
 table(ret$type)
-}
 }
