@@ -105,7 +105,7 @@ undersample_mclust <- function(data, cls, cls_col, m) {
   # class col is dropped bc it often results in only one cluster
   classif <- Mclust(subset[, -col_ind], verbose = F)$classification
   sample_ind <- sample_classes(classif, m)
-  subset[sample_ind, ]
+  return(subset[sample_ind, ])
 }
 
 #' Undersample a dataset by kmeans clustering.
@@ -133,7 +133,7 @@ undersample_kmeans <- function(data, cls, cls_col, m, k = 5) {
   # class col is dropped bc it often results in only one cluster
   classif <- kmeans(subset[, -col_ind], centers = k)$cluster
   sample_ind <- sample_classes(classif, m)
-  subset[sample_ind, ]
+  return(subset[sample_ind, ])
 }
 
 #' Undersample a dataset by hierarchical clustering.
@@ -165,7 +165,7 @@ undersample_hclust <- function(data, cls, cls_col, m, k = 5, h = NA, dist_calc =
   tree <- hclust(d)
   classif <- cutree(tree, k = k, h = h)
   sample_ind <- sample_classes(classif, m)
-  subset[sample_ind, ]
+  return(subset[sample_ind, ])
 }
 
 #' Undersample a dataset by removing Tomek links.
@@ -236,7 +236,7 @@ undersample_tomek <- function(data, cls, cls_col, m, tomek = "minor",
     d_prime <- data
   }
 
-  d_prime[d_prime[[cls_col]] == cls, ]
+  return(d_prime[d_prime[[cls_col]] == cls, ])
 }
 
 #' Randomly resample a dataset.
@@ -266,5 +266,5 @@ resample_random <- function(data, cls, cls_col, m) {
     size = m - length(inds),
     replace = (m - length(inds)) > nrow(subset)
   ))
-  subset[inds, ]
+  return(subset[inds, ])
 }
