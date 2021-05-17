@@ -32,6 +32,13 @@ validate_dataset <- function(data, cls_col) {
 #' @return A dataframe with equal class distribution.
 #' @export
 #'
+#' @importFrom Rdpack reprompt
+#'
+#' @references
+#' \insertRef{agrawal_scut_2015}{scutr}
+#'
+#' \insertRef{chawla_smote_2002}{scutr}
+#'
 #' @examples
 #' ret <- SCUT(iris, "Species")
 #' ret2 <- SCUT(chickwts, "feed", undersample = undersample_kmeans)
@@ -151,6 +158,6 @@ SCUT_parallel <- function(data, cls_col, ncores = detectCores() %/% 2,
     }
   }
   rownames(d_prime) <- NULL
-  doParallel::stopImplicitCluster()
+  stopImplicitCluster()
   return(d_prime)
 }

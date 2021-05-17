@@ -53,3 +53,8 @@ table(ret2$feed)
 ret <- SCUT_parallel(wine, "type", ncores = 2, undersample = undersample_kmeans)
 table(ret$type)
 }
+\references{
+\insertRef{agrawal_scut_2015}{scutr}
+
+\insertRef{chawla_smote_2002}{scutr}
+}
