@@ -1,4 +1,6 @@
 if: branch = master
+language: r
+
 matrix:
   include:
   - r: release
