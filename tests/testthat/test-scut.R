@@ -24,8 +24,9 @@ for (osamp in oversamplers) {
 
 
     test_that(paste(osamp, usamp, "(parallel) have equal class distribution"), {
-      # Parallel tests are very slow, so we skip them on CRAN.
-      skip_on_cran()
+      # Parallel version fails on windows if the package is not installed.
+      skip_on_os("windows")
+
 
       scutted <- SCUT_parallel(wine, "type",
         ncores = ncores, oversample = get(osamp),

@@ -106,8 +106,10 @@ SCUT <- function(data, cls_col, oversample = oversample_smote,
 #' @importFrom foreach foreach `%dopar%`
 #'
 #' @examples
+#' \dontrun{
 #' ret <- SCUT_parallel(wine, "type", ncores = 2, undersample = undersample_kmeans)
 #' table(ret$type)
+#' }
 SCUT_parallel <- function(data, cls_col, ncores = detectCores() %/% 2,
                           oversample = oversample_smote, undersample = undersample_mclust,
                           osamp_opts = list(), usamp_opts = list()) {

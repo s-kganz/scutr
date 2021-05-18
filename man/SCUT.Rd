@@ -50,8 +50,10 @@ ret <- SCUT(iris, "Species")
 ret2 <- SCUT(chickwts, "feed", undersample = undersample_kmeans)
 table(ret$Species)
 table(ret2$feed)
+\dontrun{
 ret <- SCUT_parallel(wine, "type", ncores = 2, undersample = undersample_kmeans)
 table(ret$type)
+}
 }
 \references{
 \insertRef{agrawal_scut_2015}{scutr}
