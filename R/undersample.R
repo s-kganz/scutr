@@ -4,7 +4,7 @@
 #' @param cls_col Column containing class information.
 #' @param m Desired number of observations after undersampling.
 #' @param cls Class to be undersampled.
-#' @param dist_calc Method for distance calculation. See `dist()`.
+#' @param dist_calc Method for distance calculation. See \code{\link[stats]{dist}}.
 #'
 #' @return An undersampled dataframe.
 #' @export

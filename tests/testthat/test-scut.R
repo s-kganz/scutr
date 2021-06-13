@@ -13,8 +13,8 @@ if (nzchar(chk) && chk == "TRUE") {
 }
 
 scutenv <- as.environment("package:scutr")
-oversamplers <- c(ls(envir = scutenv, pattern = "oversample.*"), "resample_random")
-undersamplers <- c(ls(envir = scutenv, pattern = "undersample.*"), "resample_random")
+oversamplers <- c(ls(envir = scutenv, pattern = "oversample_*"), "resample_random")
+undersamplers <- c(ls(envir = scutenv, pattern = "undersample_*"), "resample_random")
 for (osamp in oversamplers) {
   for (usamp in undersamplers) {
     test_that(paste(osamp, usamp, "have equal class distribution"), {
@@ -24,7 +24,8 @@ for (osamp in oversamplers) {
 
 
     test_that(paste(osamp, usamp, "(parallel) have equal class distribution"), {
-      # Parallel version fails on windows if the package is not installed.
+      # Parallel version fails on windows if the package is not installed. Since this is the
+      # case during testing, we skip the parallel version.
       skip_on_os("windows")
 
 
