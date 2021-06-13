@@ -34,12 +34,10 @@ validate_dataset <- function(data, cls_col) {
 #' @return A dataframe with equal class distribution.
 #' @export
 #'
-#' @importFrom Rdpack reprompt
-#'
 #' @references
-#' \insertRef{agrawal_scut_2015}{scutr}
+#' Agrawal A, Viktor HL, Paquet E (2015). 'SCUT: Multi-class imbalanced data classification using SMOTE and cluster-based undersampling.' In _2015 7th International Joint Conference on Knowledge Discovery, Knowledge Engineering and Knowledge Management (IC3K)_, volume 01, 226-234.
 #'
-#' \insertRef{chawla_smote_2002}{scutr}
+#' Chawla NV, Bowyer KW, Hall LO, Kegelmeyer WP (2002). 'SMOTE: Synthetic Minority Over-sampling Technique.' _Journal of Artificial Intelligence Research_, 16, 321-357. ISSN 1076-9757, doi: [10.1613/jair.953](https://doi.org/10.1613/jair.953), https://www.jair.org/index.php/jair/article/view/10302.
 #'
 #' @examples
 #' ret <- SCUT(iris, "Species", undersample = undersample_hclust,
