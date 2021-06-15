@@ -29,21 +29,21 @@ SCUT_parallel(
 
 \item{cls_col}{The column in \code{data} with class membership.}
 
-\item{oversample}{Oversampling method. Must be a function with the signature \code{foo(data, cls, cls_col, m, ...)} that returns a data frame, one of the \verb{oversample_*} functions, or \code{\link{resample_random}}.}
+\item{oversample}{Oversampling method. Must be a function with the signature \code{foo(data, cls, cls_col, m, ...)} that returns a data frame, one of the \verb{oversample_*} functions, or \code{\link{resample_random()}}.}
 
-\item{undersample}{Undersampling method. Must be a function with the signature \code{foo(data, cls, cls_col, m, ...)} that returns a data frame, one of the \verb{undersample_*} functions, or \code{\link{resample_random}}.}
+\item{undersample}{Undersampling method. Must be a function with the signature \code{foo(data, cls, cls_col, m, ...)} that returns a data frame, one of the \verb{undersample_*} functions, or \code{\link{resample_random()}}.}
 
 \item{osamp_opts}{List of options passed to the oversampling function.}
 
 \item{usamp_opts}{List of options passed to the undersampling function.}
 
-\item{ncores}{Number of cores to use with \code{\link{SCUT_parallel}}.}
+\item{ncores}{Number of cores to use with \code{\link{SCUT_parallel()}}.}
 }
 \value{
 A dataframe with equal class distribution.
 }
 \description{
-This function balances multiclass training datasets. In a dataframe with \code{n} classes and \code{m} rows, the resulting dataframe will have \code{m / n} rows per class. \code{\link{SCUT_parallel}} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{\link{undersample_mclust}}).
+This function balances multiclass training datasets. In a dataframe with \code{n} classes and \code{m} rows, the resulting dataframe will have \code{m / n} rows per class. \code{\link{SCUT_parallel()}} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{\link{undersample_mclust()}}).
 }
 \details{
 Custom functions can be used to perform under/oversampling (see the required signature below). Parameters represented by \code{...} should be passsed via \code{osamp_opts} or \code{usamp_opts} as a list.

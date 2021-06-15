@@ -5,9 +5,10 @@ Authors@R:
     person(given = "Keenan",
            family = "Ganz",
            role = c("aut", "cre"),
-           email = "ganzkeenan1@gmail.com")
+           email = "ganzkeenan1@gmail.com",
+           comment=c(ORCID="0000-0002-8486-3959"))
 Maintainer: Keenan Ganz <ganzkeenan1@gmail.com>
-Description: Imbalanced training datasets impede many popular classifiers. To balance training data, a combination of oversampling minority classes and undersampling majority classes is necessary. This package implements the SCUT (SMOTE and Cluster-based Undersampling Technique) algorithm, which uses model-based clustering and synthetic oversampling to balance multiclass training datasets.
+Description: Imbalanced training datasets impede many popular classifiers. To balance training data, a combination of oversampling minority classes and undersampling majority classes is necessary. This package implements the SCUT (SMOTE and Cluster-based Undersampling Technique) algorithm, which uses model-based clustering and synthetic oversampling to balance multiclass training datasets (Agrawal et. al. 2015 <doi:10.5220/0005595502260234>).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

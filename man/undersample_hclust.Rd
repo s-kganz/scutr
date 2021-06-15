@@ -27,7 +27,7 @@ undersample_hclust(
 
 \item{h}{Height at which to cut the clustering tree. \code{k} must be \code{NA} for this to be used.}
 
-\item{dist_calc}{Distance calculation method. See \code{dist}.}
+\item{dist_calc}{Distance calculation method. See \code{\link[stats]{dist()}}.}
 }
 \value{
 Undersampled dataframe containing only \code{cls}.

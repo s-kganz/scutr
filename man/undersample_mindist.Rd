@@ -15,7 +15,7 @@ undersample_mindist(data, cls, cls_col, m, dist_calc = "euclidean")
 
 \item{m}{Desired number of observations after undersampling.}
 
-\item{dist_calc}{Method for distance calculation. See \code{\link[stats]{dist}}.}
+\item{dist_calc}{Method for distance calculation. See \code{\link[stats]{dist()}}.}
 }
 \value{
 An undersampled dataframe.
