@@ -20,17 +20,17 @@ validate_dataset <- function(data, cls_col) {
 
 #' SMOTE and cluster-based undersampling technique.
 #'
-#' This function balances multiclass training datasets. In a dataframe with `n` classes and `m` rows, the resulting dataframe will have `m / n` rows per class. \code{\link{SCUT_parallel()}} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{\link{undersample_mclust()}}).
+#' This function balances multiclass training datasets. In a dataframe with `n` classes and `m` rows, the resulting dataframe will have `m / n` rows per class. \code{\link{SCUT_parallel}} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{\link{undersample_mclust}}).
 #'
 #' Custom functions can be used to perform under/oversampling (see the required signature below). Parameters represented by `...` should be passsed via `osamp_opts` or `usamp_opts` as a list.
 #'
 #' @param cls_col The column in `data` with class membership.
 #' @param data Numeric data frame.
-#' @param oversample Oversampling method. Must be a function with the signature `foo(data, cls, cls_col, m, ...)` that returns a data frame, one of the `oversample_*` functions, or \code{\link{resample_random()}}.
+#' @param oversample Oversampling method. Must be a function with the signature `foo(data, cls, cls_col, m, ...)` that returns a data frame, one of the `oversample_*` functions, or \code{\link{resample_random}}.
 #' @param osamp_opts List of options passed to the oversampling function.
 #' @param usamp_opts List of options passed to the undersampling function.
-#' @param undersample Undersampling method. Must be a function with the signature `foo(data, cls, cls_col, m, ...)` that returns a data frame, one of the `undersample_*` functions, or \code{\link{resample_random()}}.
-#' @param ncores Number of cores to use with \code{\link{SCUT_parallel()}}.
+#' @param undersample Undersampling method. Must be a function with the signature `foo(data, cls, cls_col, m, ...)` that returns a data frame, one of the `undersample_*` functions, or \code{\link{resample_random}}.
+#' @param ncores Number of cores to use with \code{\link{SCUT_parallel}}.
 #' @return A dataframe with equal class distribution.
 #' @export
 #'
