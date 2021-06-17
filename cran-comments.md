@@ -1,8 +1,9 @@
 ## Test environments
-* Windows 10 Education Edition v.20H2, R 3.6.1
+* Local install of Windows 10 Education Edition v.20H2, R 4.1.0
+* win-builder.r-project.org, R 4.1.0 and devel
+* Microsoft Windows Server 2019 10.0.17763 (via GitHub actions), R 4.1.0
 * ubuntu 20.04 (via GitHub actions), R 4.1.0 and devel
 * macOS 10.15.7 (via GitHub actions), R 4.1.0 and devel
-* Microsoft Windows Server 2019 10.0.17763 (via GitHub actions), R 4.1.0
 
 ## R CMD check results
 
