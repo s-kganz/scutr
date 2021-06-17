@@ -1,3 +1,6 @@
+## Resubmission Comments
+* Changed parallel tests to always use 2 cores instead of using an environment variable to detect if they are running on CRAN.
+
 ## Test environments
 * Local install of Windows 10 Education Edition v.20H2, R 4.1.0
 * win-builder.r-project.org, R 4.1.0 and devel
@@ -10,3 +13,4 @@
 0 errors | 0 warnings | 1 note
 
 * This is a new release.
+* The flagged words in DESCRIPTION are not misspelled.
