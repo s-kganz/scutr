@@ -4,7 +4,7 @@
 #' @param cls_col Column containing class information.
 #' @param m Desired number of observations after undersampling.
 #' @param cls Class to be undersampled.
-#' @param dist_calc Method for distance calculation. See \code{\link[stats]{dist}}.
+#' @param dist_calc Method for distance calculation. See \code{\link[stats]{dist}()}.
 #'
 #' @return An undersampled dataframe.
 #' @export
@@ -144,7 +144,7 @@ undersample_kmeans <- function(data, cls, cls_col, m, k = 5) {
 #' @param m Number of samples in undersampled dataset.
 #' @param k Number of clusters to derive from clustering.
 #' @param h Height at which to cut the clustering tree. `k` must be `NA` for this to be used.
-#' @param dist_calc Distance calculation method. See `dist`.
+#' @param dist_calc Distance calculation method. See \code{\link[stats]{dist}()}.
 #'
 #' @return Undersampled dataframe containing only `cls`.
 #' @export
@@ -180,7 +180,7 @@ undersample_hclust <- function(data, cls, cls_col, m, k = 5, h = NA, dist_calc =
 #'  - `minor`: Minor classes are all those with fewer than `m` instances.
 #'  - `diff`: Minor classes are all those that aren't `cls`.
 #' @param force_m If `TRUE`, uses random undersampling to discard samples if insufficient Tomek links are present to yield `m` rows of data.
-#' @param dist_calc Distance calculation method. See `dist`.
+#' @param dist_calc Distance calculation method. See \code{\link[stats]{dist}()}.
 #'
 #' @return Undersampled dataframe containing only `cls`.
 #' @export

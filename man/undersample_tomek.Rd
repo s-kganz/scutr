@@ -31,7 +31,7 @@ undersample_tomek(
 
 \item{force_m}{If \code{TRUE}, uses random undersampling to discard samples if insufficient Tomek links are present to yield \code{m} rows of data.}
 
-\item{dist_calc}{Distance calculation method. See \code{dist}.}
+\item{dist_calc}{Distance calculation method. See \code{\link[stats]{dist}()}.}
 }
 \value{
 Undersampled dataframe containing only \code{cls}.
