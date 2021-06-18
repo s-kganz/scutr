@@ -6,7 +6,7 @@ context("Tomek undersampling")
 x1 <- runif(10, 0.5, 1)
 x2 <- c(-0.1, -0.5, -0.1)
 y <- c(runif(10), c(0.6, 0.4, 0.5))
-class <- c(rep("a", 12), "b")
+class <- c(rep(1, 12), 2)
 df <- data.frame(x = c(x1, x2), y = y, class = class)
 
 if (interactive()) plot(df$x, df$y, col = df$class)
