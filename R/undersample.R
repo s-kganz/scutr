@@ -103,7 +103,7 @@ undersample_mclust <- function(data, cls, cls_col, m) {
   subset <- data[data[[cls_col]] == cls, ]
   # get cluster classification
   # class col is dropped bc it often results in only one cluster
-  classif <- Mclust(subset[, -col_ind], verbose = F)$classification
+  classif <- Mclust(subset[, -col_ind], verbose = FALSE)$classification
   sample_ind <- sample_classes(classif, m)
   return(subset[sample_ind, ])
 }
@@ -194,7 +194,7 @@ undersample_hclust <- function(data, cls, cls_col, m, k = 5, h = NA, dist_calc =
 #' undersamp2 <- undersample_tomek(iris, "setosa", "Species", 15, tomek = "diff", force_m = FALSE)
 #' nrow(undersamp2)
 undersample_tomek <- function(data, cls, cls_col, m, tomek = "minor",
-                              force_m = T, dist_calc = "euclidean") {
+                              force_m = TRUE, dist_calc = "euclidean") {
   cls_vec <- data[[cls_col]]
   if (tomek == "diff") {
     is_minor <- cls_vec != cls
