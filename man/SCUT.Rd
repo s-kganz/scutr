@@ -54,10 +54,8 @@ ret <- SCUT(iris, "Species", undersample = undersample_hclust,
 ret2 <- SCUT(chickwts, "feed", undersample = undersample_kmeans)
 table(ret$Species)
 table(ret2$feed)
-\dontrun{
 ret <- SCUT_parallel(wine, "type", ncores = 2, undersample = undersample_kmeans)
 table(ret$type)
-}
 }
 \references{
 Agrawal A, Viktor HL, Paquet E (2015). 'SCUT: Multi-class imbalanced data classification using SMOTE and cluster-based undersampling.' In \emph{2015 7th International Joint Conference on Knowledge Discovery, Knowledge Engineering and Knowledge Management (IC3K)}, volume 01, 226-234.

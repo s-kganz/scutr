@@ -48,6 +48,14 @@ for (i in 1:length(undersamplers)) {
             })
 }
 
+# if on windows, a warning should fire
+if (.Platform$OS.type == "windows") {
+  expect_warning(
+    SCUT_parallel(wine, "type"),
+    regexp=""
+  )
+}
+
 # test custom functions
 # dummy func that follows the required signature
 foo <- function(data, cls, cls_col, m) {

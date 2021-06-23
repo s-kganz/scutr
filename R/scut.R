@@ -20,7 +20,7 @@ validate_dataset <- function(data, cls_col) {
 
 #' SMOTE and cluster-based undersampling technique.
 #'
-#' This function balances multiclass training datasets. In a dataframe with `n` classes and `m` rows, the resulting dataframe will have `m / n` rows per class. \code{\link{SCUT_parallel}()} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{\link{undersample_mclust}()}).
+#' This function balances multiclass training datasets. In a dataframe with `n` classes and `m` rows, the resulting dataframe will have `m / n` rows per class. \code{\link{SCUT_parallel}()} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{\link{undersample_mclust}()}). Note that \code{\link{SCUT_parallel}()} will always run on one core on Windows.
 #'
 #' Custom functions can be used to perform under/oversampling (see the required signature below). Parameters represented by `...` should be passsed via `osamp_opts` or `usamp_opts` as a list.
 #'
@@ -102,65 +102,54 @@ SCUT <- function(data, cls_col, oversample = oversample_smote,
 #'
 #' @export
 #'
-#' @importFrom parallel detectCores
-#' @importFrom doParallel registerDoParallel stopImplicitCluster
-#' @importFrom foreach foreach `%dopar%`
+#' @importFrom parallel detectCores mclapply
 #'
 #' @examples
-#' \dontrun{
 #' ret <- SCUT_parallel(wine, "type", ncores = 2, undersample = undersample_kmeans)
 #' table(ret$type)
-#' }
 SCUT_parallel <- function(data, cls_col, ncores = detectCores() %/% 2,
-                          oversample = oversample_smote, undersample = undersample_mclust,
+                          oversample = oversample_smote,
+                          undersample = undersample_mclust,
                           osamp_opts = list(), usamp_opts = list()) {
   validate_dataset(data, cls_col)
+
+  # windows does not support mclapply, so we have to do this serially
+  if (.Platform$OS.type == "windows") {
+    warning("SCUT_parallel is not supported on Windows and will run on
+             one core.")
+    ncores <- 1
+  }
 
   # vector of classes in the data
   classes <- unique(data[[cls_col]])
   # target number of observations per class
   m <- round(nrow(data) / length(classes))
 
-  # register cores
-  registerDoParallel(min(ncores, length(classes)))
-
-  # define a local to make R CMD check happy
-  cls <- NA
-
-  d_prime <- foreach(cls = classes, .combine = rbind, .packages = c("scutr")) %dopar% {
+  d_prime <- mclapply(classes, function(cls) {
     n <- sum(data[[cls_col]] == cls)
     if (n < m) {
-      do.call(
-        oversample,
-        c(
-          list(
-            data = data,
-            cls_col = cls_col,
-            cls = cls,
-            m = m
-          ),
-          osamp_opts
-        )
-      )
+      do.call(oversample,
+              c(list(
+                data = data,
+                cls_col = cls_col,
+                cls = cls,
+                m = m
+              ),
+              osamp_opts))
     } else if (n > m) {
-      do.call(
-        undersample,
-        c(
-          list(
-            data = data,
-            cls_col = cls_col,
-            cls = cls,
-            m = m
-          ),
-          usamp_opts
-        )
-      )
+      do.call(undersample,
+              c(list(
+                data = data,
+                cls_col = cls_col,
+                cls = cls,
+                m = m
+              ),
+              usamp_opts))
     } else {
       # this class is already balanced
-      data[data[[cls_col]] == cls, ]
+      data[data[[cls_col]] == cls,]
     }
-  }
-  rownames(d_prime) <- NULL
-  stopImplicitCluster()
-  return(d_prime)
+  }, mc.cores=ncores)
+
+  return(do.call("rbind", d_prime))
 }
