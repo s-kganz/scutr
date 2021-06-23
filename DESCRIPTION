@@ -1,6 +1,6 @@
 Package: scutr
 Title: Balancing Multiclass Datasets for Classification Tasks
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     person(given = "Keenan",
            family = "Ganz",
@@ -15,9 +15,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports:
     smotefamily,
-    doParallel,
     parallel,
-    foreach,
     mclust
 Depends: 
     R (>= 2.10)

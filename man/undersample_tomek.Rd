@@ -10,7 +10,7 @@ undersample_tomek(
   cls_col,
   m,
   tomek = "minor",
-  force_m = T,
+  force_m = TRUE,
   dist_calc = "euclidean"
 )
 }
