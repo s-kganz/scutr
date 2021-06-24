@@ -28,10 +28,7 @@ for (i in 1:length(undersamplers)) {
 
   test_that(paste(osamp, usamp, "(parallel) have equal class distribution"),
             {
-              # During R CMD check, doParallel sometimes fails to export the
-              # package to parallel workers on Windows. This is not a problem
-              # once the package is installed, so the parallel version is
-              # skipped on Windows.
+              # Skip to avoid triggering a warning on > 1 core
               skip_on_os("windows")
 
 
@@ -52,7 +49,7 @@ for (i in 1:length(undersamplers)) {
 if (.Platform$OS.type == "windows") {
   expect_warning(
     SCUT_parallel(wine, "type"),
-    regexp=""
+    regexp="SCUT_parallel runs on one core only on Windows."
   )
 }
 

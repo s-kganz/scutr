@@ -43,7 +43,7 @@ SCUT_parallel(
 A dataframe with equal class distribution.
 }
 \description{
-This function balances multiclass training datasets. In a dataframe with \code{n} classes and \code{m} rows, the resulting dataframe will have \code{m / n} rows per class. \code{\link{SCUT_parallel}()} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{\link{undersample_mclust}()}).
+This function balances multiclass training datasets. In a dataframe with \code{n} classes and \code{m} rows, the resulting dataframe will have \code{m / n} rows per class. \code{\link{SCUT_parallel}()} distributes each over/undersampling task across multiple cores. Speedup usually occurs only if there are many classes using one of the slower resampling techniques (e.g. \code{\link{undersample_mclust}()}). Note that \code{\link{SCUT_parallel}()} will always run on one core on Windows.
 }
 \details{
 Custom functions can be used to perform under/oversampling (see the required signature below). Parameters represented by \code{...} should be passsed via \code{osamp_opts} or \code{usamp_opts} as a list.
@@ -54,7 +54,9 @@ ret <- SCUT(iris, "Species", undersample = undersample_hclust,
 ret2 <- SCUT(chickwts, "feed", undersample = undersample_kmeans)
 table(ret$Species)
 table(ret2$feed)
-ret <- SCUT_parallel(wine, "type", ncores = 2, undersample = undersample_kmeans)
+# SCUT_parallel fires a warning if ncores > 1 on Windows and will run on
+# one core only.
+ret <- SCUT_parallel(wine, "type", ncores = 1, undersample = undersample_kmeans)
 table(ret$type)
 }
 \references{

@@ -105,7 +105,9 @@ SCUT <- function(data, cls_col, oversample = oversample_smote,
 #' @importFrom parallel detectCores mclapply
 #'
 #' @examples
-#' ret <- SCUT_parallel(wine, "type", ncores = 2, undersample = undersample_kmeans)
+#' # SCUT_parallel fires a warning if ncores > 1 on Windows and will run on
+#' # one core only.
+#' ret <- SCUT_parallel(wine, "type", ncores = 1, undersample = undersample_kmeans)
 #' table(ret$type)
 SCUT_parallel <- function(data, cls_col, ncores = detectCores() %/% 2,
                           oversample = oversample_smote,
@@ -115,8 +117,7 @@ SCUT_parallel <- function(data, cls_col, ncores = detectCores() %/% 2,
 
   # windows does not support mclapply, so we have to do this serially
   if (.Platform$OS.type == "windows") {
-    warning("SCUT_parallel is not supported on Windows and will run on
-             one core.")
+    warning("SCUT_parallel runs on one core only on Windows.")
     ncores <- 1
   }
 
