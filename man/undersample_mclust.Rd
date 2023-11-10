@@ -4,7 +4,7 @@
 \alias{undersample_mclust}
 \title{Undersample a dataset by expectation-maximization clustering}
 \usage{
-undersample_mclust(data, cls, cls_col, m)
+undersample_mclust(data, cls, cls_col, m, ...)
 }
 \arguments{
 \item{data}{Data to be undersampled.}
@@ -14,6 +14,8 @@ undersample_mclust(data, cls, cls_col, m)
 \item{cls_col}{Class column.}
 
 \item{m}{Number of samples in undersampled dataset.}
+
+\item{...}{Additional arguments passed to \code{\link[mclust]{Mclust}()}}
 }
 \value{
 The undersampled dataframe containing only instance of \code{cls}.

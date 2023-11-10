@@ -4,7 +4,7 @@
 \alias{undersample_mindist}
 \title{Undersample a dataset by iteratively removing the observation with the lowest total distance to its neighbors of the same class.}
 \usage{
-undersample_mindist(data, cls, cls_col, m, dist_calc = "euclidean")
+undersample_mindist(data, cls, cls_col, m, ...)
 }
 \arguments{
 \item{data}{Dataset to undersample. Aside from \code{cls_col}, must be numeric.}
@@ -15,7 +15,7 @@ undersample_mindist(data, cls, cls_col, m, dist_calc = "euclidean")
 
 \item{m}{Desired number of observations after undersampling.}
 
-\item{dist_calc}{Method for distance calculation. See \code{\link[stats]{dist}()}.}
+\item{...}{Additional arguments passed to \code{\link[stats]{dist}()}.}
 }
 \value{
 An undersampled dataframe.

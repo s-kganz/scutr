@@ -4,7 +4,7 @@
 #' @param cls_col Column containing class information.
 #' @param m Desired number of observations after undersampling.
 #' @param cls Class to be undersampled.
-#' @param dist_calc Method for distance calculation. See \code{\link[stats]{dist}()}.
+#' @param ... Additional arguments passed to \code{\link[stats]{dist}()}.
 #'
 #' @return An undersampled dataframe.
 #' @export
@@ -16,11 +16,11 @@
 #' nrow(setosa)
 #' undersamp <- undersample_mindist(setosa, "setosa", "Species", 50)
 #' nrow(undersamp)
-undersample_mindist <- function(data, cls, cls_col, m, dist_calc = "euclidean") {
+undersample_mindist <- function(data, cls, cls_col, m, ...) {
   # select the class to be undersampled
   col_ind <- which(names(data) == cls_col)
   subset <- data[data[[cls_col]] == cls, ]
-  dist_mtx <- as.matrix(dist(subset[, -col_ind], method = dist_calc))
+  dist_mtx <- as.matrix(dist(subset[, -col_ind], ...))
 
   # number of times to iterate
   to_discard <- nrow(subset) - m
@@ -85,6 +85,7 @@ sample_classes <- function(vec, tot_sample) {
 #' @param cls Class to be undersampled.
 #' @param cls_col Class column.
 #' @param m Number of samples in undersampled dataset.
+#' @param ... Additional arguments passed to \code{\link[mclust]{Mclust}()}
 #'
 #' @return The undersampled dataframe containing only instance of `cls`.
 #' @export
@@ -97,13 +98,13 @@ sample_classes <- function(vec, tot_sample) {
 #' nrow(setosa)
 #' undersamp <- undersample_mclust(setosa, "setosa", "Species", 15)
 #' nrow(undersamp)
-undersample_mclust <- function(data, cls, cls_col, m) {
+undersample_mclust <- function(data, cls, cls_col, m, ...) {
   # select the class to be undersampled
   col_ind <- which(names(data) == cls_col)
   subset <- data[data[[cls_col]] == cls, ]
   # get cluster classification
   # class col is dropped bc it often results in only one cluster
-  classif <- Mclust(subset[, -col_ind], verbose = FALSE)$classification
+  classif <- Mclust(subset[, -col_ind], verbose = FALSE, ...)$classification
   sample_ind <- sample_classes(classif, m)
   return(subset[sample_ind, ])
 }
@@ -115,6 +116,7 @@ undersample_mclust <- function(data, cls, cls_col, m) {
 #' @param cls_col Column containing class information.
 #' @param m Number of samples in undersampled dataset.
 #' @param k Number of centers in clustering.
+#' @param ... Additional arguments passed to \code{\link[stats]{kmeans}()}
 #'
 #' @return The undersampled dataframe containing only instances of `cls`.
 #' @export
@@ -125,13 +127,13 @@ undersample_mclust <- function(data, cls, cls_col, m) {
 #' table(iris$Species)
 #' undersamp <- undersample_kmeans(iris, "setosa", "Species", 15)
 #' nrow(undersamp)
-undersample_kmeans <- function(data, cls, cls_col, m, k = 5) {
+undersample_kmeans <- function(data, cls, cls_col, m, k = 5, ...) {
   # select the class to be undersampled
   col_ind <- which(names(data) == cls_col)
   subset <- data[data[[cls_col]] == cls, ]
   # get cluster classification
   # class col is dropped bc it often results in only one cluster
-  classif <- kmeans(subset[, -col_ind], centers = k)$cluster
+  classif <- kmeans(subset[, -col_ind], centers = k, ...)$cluster
   sample_ind <- sample_classes(classif, m)
   return(subset[sample_ind, ])
 }
@@ -144,7 +146,7 @@ undersample_kmeans <- function(data, cls, cls_col, m, k = 5) {
 #' @param m Number of samples in undersampled dataset.
 #' @param k Number of clusters to derive from clustering.
 #' @param h Height at which to cut the clustering tree. `k` must be `NA` for this to be used.
-#' @param dist_calc Distance calculation method. See \code{\link[stats]{dist}()}.
+#' @param ... Additional arguments passed to \code{\link[stats]{dist}()}.
 #'
 #' @return Undersampled dataframe containing only `cls`.
 #' @export
@@ -156,12 +158,12 @@ undersample_kmeans <- function(data, cls, cls_col, m, k = 5) {
 #' table(iris$Species)
 #' undersamp <- undersample_hclust(iris, "setosa", "Species", 15)
 #' nrow(undersamp)
-undersample_hclust <- function(data, cls, cls_col, m, k = 5, h = NA, dist_calc = "euclidean") {
+undersample_hclust <- function(data, cls, cls_col, m, k = 5, h = NA, ...) {
   # select the desired class
   col_ind <- which(names(data) == cls_col)
   subset <- data[data[[cls_col]] == cls, ]
   # perform hierarchical clustering
-  d <- dist(subset, method = dist_calc)
+  d <- dist(subset, ...)
   tree <- hclust(d)
   classif <- cutree(tree, k = k, h = h)
   sample_ind <- sample_classes(classif, m)
@@ -180,7 +182,7 @@ undersample_hclust <- function(data, cls, cls_col, m, k = 5, h = NA, dist_calc =
 #'  - `minor`: Minor classes are all those with fewer than `m` instances.
 #'  - `diff`: Minor classes are all those that aren't `cls`.
 #' @param force_m If `TRUE`, uses random undersampling to discard samples if insufficient Tomek links are present to yield `m` rows of data.
-#' @param dist_calc Distance calculation method. See \code{\link[stats]{dist}()}.
+#' @param ... Additional arguments passed to \code{\link[stats]{dist}()}.
 #'
 #' @return Undersampled dataframe containing only `cls`.
 #' @export
@@ -194,7 +196,7 @@ undersample_hclust <- function(data, cls, cls_col, m, k = 5, h = NA, dist_calc =
 #' undersamp2 <- undersample_tomek(iris, "setosa", "Species", 15, tomek = "diff", force_m = FALSE)
 #' nrow(undersamp2)
 undersample_tomek <- function(data, cls, cls_col, m, tomek = "minor",
-                              force_m = TRUE, dist_calc = "euclidean") {
+                              force_m = TRUE, ...) {
   cls_vec <- data[[cls_col]]
   if (tomek == "diff") {
     is_minor <- cls_vec != cls
@@ -202,7 +204,7 @@ undersample_tomek <- function(data, cls, cls_col, m, tomek = "minor",
     minor_classes <- Filter(function(c) sum(cls_vec == c) < m, unique(cls_vec))
     is_minor <- cls_vec %in% minor_classes
   }
-  dmtx <- as.matrix(dist(data[, -which(names(data) == cls_col)], method = dist_calc))
+  dmtx <- as.matrix(dist(data[, -which(names(data) == cls_col)], ...))
   diag(dmtx) <- max(dmtx)
 
   tomeks <- c()

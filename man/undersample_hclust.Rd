@@ -4,15 +4,7 @@
 \alias{undersample_hclust}
 \title{Undersample a dataset by hierarchical clustering.}
 \usage{
-undersample_hclust(
-  data,
-  cls,
-  cls_col,
-  m,
-  k = 5,
-  h = NA,
-  dist_calc = "euclidean"
-)
+undersample_hclust(data, cls, cls_col, m, k = 5, h = NA, ...)
 }
 \arguments{
 \item{data}{Dataset to be undersampled.}
@@ -27,7 +19,7 @@ undersample_hclust(
 
 \item{h}{Height at which to cut the clustering tree. \code{k} must be \code{NA} for this to be used.}
 
-\item{dist_calc}{Distance calculation method. See \code{\link[stats]{dist}()}.}
+\item{...}{Additional arguments passed to \code{\link[stats]{dist}()}.}
 }
 \value{
 Undersampled dataframe containing only \code{cls}.

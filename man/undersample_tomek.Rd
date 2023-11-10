@@ -4,15 +4,7 @@
 \alias{undersample_tomek}
 \title{Undersample a dataset by removing Tomek links.}
 \usage{
-undersample_tomek(
-  data,
-  cls,
-  cls_col,
-  m,
-  tomek = "minor",
-  force_m = TRUE,
-  dist_calc = "euclidean"
-)
+undersample_tomek(data, cls, cls_col, m, tomek = "minor", force_m = TRUE, ...)
 }
 \arguments{
 \item{data}{Dataset to be undersampled.}
@@ -31,7 +23,7 @@ undersample_tomek(
 
 \item{force_m}{If \code{TRUE}, uses random undersampling to discard samples if insufficient Tomek links are present to yield \code{m} rows of data.}
 
-\item{dist_calc}{Distance calculation method. See \code{\link[stats]{dist}()}.}
+\item{...}{Additional arguments passed to \code{\link[stats]{dist}()}.}
 }
 \value{
 Undersampled dataframe containing only \code{cls}.

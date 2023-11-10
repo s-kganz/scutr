@@ -4,7 +4,7 @@
 \alias{undersample_kmeans}
 \title{Undersample a dataset by kmeans clustering.}
 \usage{
-undersample_kmeans(data, cls, cls_col, m, k = 5)
+undersample_kmeans(data, cls, cls_col, m, k = 5, ...)
 }
 \arguments{
 \item{data}{Dataset to be undersampled.}
@@ -16,6 +16,8 @@ undersample_kmeans(data, cls, cls_col, m, k = 5)
 \item{m}{Number of samples in undersampled dataset.}
 
 \item{k}{Number of centers in clustering.}
+
+\item{...}{Additional arguments passed to \code{\link[stats]{kmeans}()}}
 }
 \value{
 The undersampled dataframe containing only instances of \code{cls}.

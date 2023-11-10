@@ -4,7 +4,7 @@
 \alias{oversample_smote}
 \title{Oversample a dataset by SMOTE.}
 \usage{
-oversample_smote(data, cls, cls_col, m)
+oversample_smote(data, cls, cls_col, m, k = NA)
 }
 \arguments{
 \item{data}{Dataset to be oversampled.}
@@ -14,6 +14,8 @@ oversample_smote(data, cls, cls_col, m)
 \item{cls_col}{Column containing class information.}
 
 \item{m}{Desired number of samples in the oversampled data.}
+
+\item{k}{Number of neighbors used in \code{\link[smotefamily]{SMOTE}()} to generate synthetic minority instances. This value must be smaller than the number of minority instances already present for a given class.}
 }
 \value{
 The oversampled dataset.

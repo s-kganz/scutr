@@ -4,6 +4,7 @@
 #' @param cls Class to be oversampled.
 #' @param cls_col Column containing class information.
 #' @param m Desired number of samples in the oversampled data.
+#' @param k Number of neighbors used in \code{\link[smotefamily]{SMOTE}()} to generate synthetic minority instances. This value must be smaller than the number of minority instances already present for a given class.
 #'
 #' @return The oversampled dataset.
 #' @export
@@ -14,10 +15,11 @@
 #' table(iris$Species)
 #' smoted <- oversample_smote(iris, "setosa", "Species", 100)
 #' nrow(smoted)
-oversample_smote <- function(data, cls, cls_col, m) {
+oversample_smote <- function(data, cls, cls_col, m, k = NA) {
   col_ind <- which(names(data) == cls_col)
   orig_cols <- names(data)
-  dup_size <- ceiling(m / sum(data[[cls_col]] == cls))
+  n <- sum(data[[cls_col]] == cls)
+  dup_size <- ceiling(m / n)
   # set the class to whether it is equal to the minority class
   data[[cls_col]] <- as.factor(data[[cls_col]] == cls)
   # smotefamily::SMOTE breaks for one-dim datasets. This adds a dummy column
@@ -25,10 +27,23 @@ oversample_smote <- function(data, cls, cls_col, m) {
   if (ncol(data) == 2) {
     data$dummy__col__ <- 0
   }
-  # perform SMOTE
-  smoteret <- SMOTE(data[, -col_ind],
+  # SMOTE uses the k nearest neighbors to generate a new observation. This
+  # k cannot be higher than the number of instances of the minority class.
+  if (is.na(k)) {
+      k <- min(5, n)
+  } else if (k > n) {
+      stop(
+          paste("k cannot be larger than the number of observations in a class\n",
+                "k =", k, "\n",
+                "n =", n, "\n",
+                "class =", cls)
+          )
+  }
+  smoteret <- SMOTE(
+    data[, -col_ind],
     data[, col_ind],
-    dup_size = dup_size
+    dup_size = dup_size,
+    K = k
   )
   # rbind the original observations and sufficient samples of the synthetic ones
   orig <- smoteret$orig_P
