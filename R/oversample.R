@@ -4,7 +4,7 @@
 #' @param cls Class to be oversampled.
 #' @param cls_col Column containing class information.
 #' @param m Desired number of samples in the oversampled data.
-#' @param k Number of neighbors used in \code{\link[smotefamily]{SMOTE}()} to generate synthetic minority instances. This value must be smaller than the number of minority instances already present for a given class.
+#' @param k Number of neighbors used in \code{\link[smotefamily]{SMOTE}()} to generate synthetic minority instances. This value must be smaller than the number of minority instances already present for a given class. If `NA`, `min(5, n-1)` is chosen, where n is the number of instances of the minority class.
 #'
 #' @return The oversampled dataset.
 #' @export
@@ -30,10 +30,10 @@ oversample_smote <- function(data, cls, cls_col, m, k = NA) {
   # SMOTE uses the k nearest neighbors to generate a new observation. This
   # k cannot be higher than the number of instances of the minority class.
   if (is.na(k)) {
-      k <- min(5, n)
-  } else if (k > n) {
+      k <- min(5, n-1)
+  } else if (k > n-1) {
       stop(
-          paste("k cannot be larger than the number of observations in a class\n",
+          paste("k must be smaller than the number of observations in a class\n",
                 "k =", k, "\n",
                 "n =", n, "\n",
                 "class =", cls)

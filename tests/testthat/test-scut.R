@@ -94,5 +94,5 @@ test_that("NAs are not allowed", {
 })
 test_that("oversample_smote throws error on too large a value of k", {
     expect_error(SCUT(wine, "type", osamp_opts = list(k = 100)),
-                 regexp="k cannot be larger than the number of observations*")
+                 regexp="k must be smaller than the number of observations*")
 })

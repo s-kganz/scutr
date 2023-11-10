@@ -15,7 +15,7 @@ oversample_smote(data, cls, cls_col, m, k = NA)
 
 \item{m}{Desired number of samples in the oversampled data.}
 
-\item{k}{Number of neighbors used in \code{\link[smotefamily]{SMOTE}()} to generate synthetic minority instances. This value must be smaller than the number of minority instances already present for a given class.}
+\item{k}{Number of neighbors used in \code{\link[smotefamily]{SMOTE}()} to generate synthetic minority instances. This value must be smaller than the number of minority instances already present for a given class. If \code{NA}, \code{min(5, n-1)} is chosen, where n is the number of instances of the minority class.}
 }
 \value{
 The oversampled dataset.
