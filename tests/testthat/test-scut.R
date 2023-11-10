@@ -71,7 +71,7 @@ scutted <-
        usamp_opts = list(k = 7))
 test_that("Custom arguments are passed correctly", {
   expect_true(strictly_balanced(scutted$type))
-  expect_error(SCUT(wine, "type", osamp_opts = list(k = 7)),
+  expect_error(SCUT(wine, "type", osamp_opts = list(foo = 7)),
                regexp = "unused argument*")
 })
 
@@ -91,4 +91,8 @@ bad$x1[1] <- NA
 test_that("NAs are not allowed", {
   expect_error(SCUT(bad, "type"),
                regexp = "Data frame cannot contain NAs.")
+})
+test_that("oversample_smote throws error on too large a value of k", {
+    expect_error(SCUT(wine, "type", osamp_opts = list(k = 100)),
+                 regexp="k cannot be larger than the number of observations*")
 })
