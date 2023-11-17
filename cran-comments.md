@@ -1,16 +1,17 @@
-## Resubmission Comments
-* Changed parallel back-end; all parallel functions run on one core on Windows (this is documented and a warning is shown).
-
 ## Test environments
-* Local install of Windows 10 Education Edition v.20H2, R 4.1.0
-* win-builder.r-project.org, R 4.1.0 and devel
-* Microsoft Windows Server 2019 10.0.17763 (via GitHub actions), R 4.1.0
-* ubuntu 20.04 (via GitHub actions), R 4.1.0 and devel
-* macOS 10.15.7 (via GitHub actions), R 4.1.0 and devel
+* Local install of Windows 11 Pro v.22H2, R 4.3.2
+* win-builder.r-project.org, R 4.3.2 and devel
+* Microsoft Windows Server 2022 10.0.17763 (via GitHub actions), R 4.3.2
+* ubuntu 22.04 (via GitHub actions), R 4.3.2 and devel
+* macOS 12.7 (via GitHub actions), R 4.3.2 and devel
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 
-* This is a new release.
-* The flagged words in DESCRIPTION are not misspelled.
+## revdepcheck results
+
+We checked 1 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
+
+ * We saw 0 new problems
+ * We failed to check 0 packages

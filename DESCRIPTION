@@ -1,6 +1,6 @@
 Package: scutr
 Title: Balancing Multiclass Datasets for Classification Tasks
-Version: 0.1.2
+Version: 0.2.0
 Authors@R: 
     person(given = "Keenan",
            family = "Ganz",
